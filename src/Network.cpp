@@ -11,27 +11,32 @@ using namespace std;
 
 Network::Network(const vector<int>& sizes) {
 
+	typedef vector<double> vdbl;
+	typedef vector<vdbl> v2dbl;
+	typedef vector<v2dbl> v3dbl;
+
 	randGen = mt19937(randDev()); 
 
 	// defaults to mean of 0.0, standard dev of 1.0
     randDistribution = normal_distribution<double>(); 
 
 	layerSizes = sizes;
-	bias = vector<vector<double> >(sizes.size());
-	weights = vector<vector<vector<double> > >(sizes.size()-1);
+
+	bias = v2dbl(sizes.size());
+	weights = v3dbl(sizes.size()-1);
 
 	for (int i = 0; i < sizes.size(); ++i) {
 		// don't set for input layer
 		if (i) { 
-			bias[i] = vector<double>(sizes[i]);
+			bias[i] = vdbl(sizes[i]);
 			for (int j = 0; j < bias[i].size(); ++j) {
 				bias[i][j] = randDistribution(randGen); // is a random double
 			}
 		}
 		
-		weights[i] = vector<vector<double> >(sizes[i]);
+		weights[i] = v2dbl(sizes[i]);
 		for (int j = 0; j < weights[i].size(); ++j) {
-			weights[i][j] = vector<double>(sizes[i+1]);
+			weights[i][j] = vdbl(sizes[i+1]);
 			for (int k = 0; k < weights[i][j].size(); ++k) {
 				weights[i][j][k] = randDistribution(randGen);
 			}
