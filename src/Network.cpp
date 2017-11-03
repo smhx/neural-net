@@ -46,7 +46,7 @@ Network::vdbl Network::feedForward(vdbl& a) {
 			pre[k] = sigmoid(cur[k]);
 		}
 	}
-	return cur;
+	return pre;
 }
 
 
