@@ -41,7 +41,7 @@ Network::vdbl Network::feedForward(vdbl& a) {
 				cur[k] += weights[i][j][k] * pre[j];
 			}
 		}
-
+		pre.resize(cur.size());
 		for (int k = 0; k < cur.size(); ++k) {
 			pre[k] = sigmoid(cur[k]);
 		}
