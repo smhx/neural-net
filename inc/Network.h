@@ -7,21 +7,23 @@
 #include <cstdio>
 #include <cmath>
 
+// #define MAXN 100005 all #defines are visible in main.cpp
+
 #include "Data.h"
 
-using namespace std;
+// using namespace std; Should not use namespace in header file!
 
 class Network {
 
 private:
-	typedef vector<double> vdbl;
-	typedef vector<vdbl> v2dbl;
-	typedef vector<v2dbl> v3dbl;
+	typedef std::vector<double> vdbl;
+	typedef std::vector<vdbl> v2dbl;
+	typedef std::vector<v2dbl> v3dbl;
 
 public:
 
-	Network(const vector<int>& sizes);
-	void SGD(vector<Data>& data, int numEpochs, int batchSize, double trainingRate);
+	Network(const std::vector<int>& sizes);
+	void SGD(std::vector<Data>& data, int numEpochs, int batchSize, double trainingRate);
 	vdbl feedForward(vdbl& inputLayer);
 
 private: // methods
@@ -30,12 +32,14 @@ private: // methods
 
 	double sigmoidPrime(double x);
 
-	void updateBatch(vector<Data>& batch, double trainingRate);
+	void updateBatch(std::vector<Data>& batch, double trainingRate);
+
+	void backprop(Data& data, v2dbl& dgradb, v3dbl& dgradw);
 
 private: // properties
 
 	// the size of layer i with layer 0 = input layer
-	vector<int> layerSizes;
+	std::vector<int> layerSizes;
 
 	// size of weights is number of layers - 1
 	// each element of weights ia a weight matrix from layer i to layer i+1
@@ -50,15 +54,13 @@ private: // properties
 	// Random stuff
 
 	// random device class instance, source of 'true' randomness for initializing random seed
-	random_device randDev; 
+	std::random_device randDev; 
 
     // Mersenne twister PRNG, initialized with seed from previous random device instance
-	mt19937 randGen;
+	std::mt19937 randGen;
 
 	// normal distribution
-    normal_distribution<double> randDistribution; 
-
-
+    std::normal_distribution<double> randDistribution; 
 };
 
 #endif
