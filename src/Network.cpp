@@ -32,21 +32,21 @@ Network::Network(const vector<int>& sizes) {
 }
 
 Network::vdbl Network::feedForward(vdbl& a) {
-	vdbl pre=a, cur;
+	vdbl activation=a, dot;
 	for (int i = 0; i + 1 < layerSizes.size(); ++i) {
 		// update layer i + 1 from layer i
-		cur = vdbl(layerSizes[i+1]);
+		dot = vdbl(0.0, layerSizes[i+1]);
 		for (int j = 0; j < layerSizes[i]; ++j) {
 			for (int k = 0; k < layerSizes[i+1]; ++k) {
-				cur[k] += weights[i][j][k] * pre[j];
+				dot[k] += weights[i][j][k] * activation[j];
 			}
 		}
-		pre.resize(cur.size());
-		for (int k = 0; k < cur.size(); ++k) {
-			pre[k] = sigmoid(cur[k]);
+		activation.resize(dot.size());
+		for (int k = 0; k < activation.size(); ++k) {
+			activation[k] = sigmoid(dot[k]+biases[i+1][k]);
 		}
 	}
-	return pre;
+	return activation;
 }
 
 
