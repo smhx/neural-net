@@ -10,7 +10,7 @@ struct Data {
 	vdbl inlayer, outlayer;
 
 	Data(int _in, int _out);
-	Data(int _in, const vdbl& _outlayer);
+	// Data(int _in, const vdbl& _outlayer);
 };
 
 #endif
