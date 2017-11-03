@@ -14,7 +14,7 @@ Network::Network(const vector<int>& sizes) {
 	randGen = mt19937(randDev()); 
 
 	// defaults to mean of 0.0, standard dev of 1.0
-    randDistribution = normal_distribution<double>(); 
+	randDistribution = normal_distribution<double>(); 
 
 	layerSizes = sizes;
 
