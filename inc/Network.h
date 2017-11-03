@@ -5,25 +5,34 @@
 #include <random>
 #include <algorithm>
 #include <cstdio>
+#include <cmath>
 
 #include "Data.h"
 
 using namespace std;
 
 class Network {
-public:
 
-	Network(const vector<int>& sizes);
-	void SGD(vector<Data>& data, int numEpochs, int batchSize, double trainingRate);
-	double feedForward(int input);
-
-private: 
-
+private:
 	typedef vector<double> vdbl;
 	typedef vector<vdbl> v2dbl;
 	typedef vector<v2dbl> v3dbl;
 
+public:
+
+	Network(const vector<int>& sizes);
+	void SGD(vector<Data>& data, int numEpochs, int batchSize, double trainingRate);
+	vdbl feedForward(vdbl& inputLayer);
+
+private: // methods
+
+	double sigmoid(double x);
+
+	double sigmoidPrime(double x);
+
 	void updateBatch(vector<Data>& batch, double trainingRate);
+
+private: // properties
 
 	// the size of layer i with layer 0 = input layer
 	vector<int> layerSizes;
@@ -31,12 +40,12 @@ private:
 	// size of weights is number of layers - 1
 	// each element of weights ia a weight matrix from layer i to layer i+1
 	// so weights[i] is a layerSizes[i] x layerSizes[i+1] matrix
-	vector< vector< vector<double> > > weights; 
+	v3dbl weights; 
 
 	// bias of layer i
 	// skip i = 0 cuz input has no bias
 	// has size of layerSizes.size()
-	vector< vector<double> > biases;
+	v2dbl biases;
 
 	// Random stuff
 
