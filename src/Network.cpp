@@ -1,19 +1,6 @@
 #include "../inc/Network.h"
-#include "../inc/Data.h"
-
-#include <vector>
-#include <random>
-#include <algorithm>
-
-
-using namespace std;
-
 
 Network::Network(const vector<int>& sizes) {
-
-	typedef vector<double> vdbl;
-	typedef vector<vdbl> v2dbl;
-	typedef vector<v2dbl> v3dbl;
 
 	randGen = mt19937(randDev()); 
 
@@ -22,15 +9,15 @@ Network::Network(const vector<int>& sizes) {
 
 	layerSizes = sizes;
 
-	bias = v2dbl(sizes.size());
+	biases = v2dbl(sizes.size());
 	weights = v3dbl(sizes.size()-1);
 
 	for (int i = 0; i < sizes.size(); ++i) {
 		// don't set for input layer
 		if (i) { 
-			bias[i] = vdbl(sizes[i]);
-			for (int j = 0; j < bias[i].size(); ++j) {
-				bias[i][j] = randDistribution(randGen); // is a random double
+			biases[i] = vdbl(sizes[i]);
+			for (int j = 0; j < biases[i].size(); ++j) {
+				biases[i][j] = randDistribution(randGen); // is a random double
 			}
 		}
 		
@@ -42,6 +29,11 @@ Network::Network(const vector<int>& sizes) {
 			}
 		}
 	}
+}
+
+double Network::feedForward(int a) {
+	//...
+	return 0.0;
 }
 
 
@@ -57,5 +49,13 @@ void Network::SGD(vector<Data>& data, int numEpochs, int batchSize, double train
 			updateBatch(batch, trainingRate);
 			printf("Epoch %d complete\n", epoch);
 		}
+	}
+}
+
+void Network::updateBatch(vector<Data>& batch, double trainingRate) {
+	v3dbl gradb(biases.size() ), gradw(weights.size());
+	for (int i = 0; i < biases.size(); ++i) {
+		gradb[i]=v2dbl(biases[i].size());
+		//...
 	}
 }
