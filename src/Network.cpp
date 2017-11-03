@@ -43,7 +43,7 @@ Network::vdbl Network::feedForward(vdbl& a) {
 		}
 
 		for (int k = 0; k < cur.size(); ++k) {
-			cur[k] = sigmoid(cur[k]);
+			pre[k] = sigmoid(cur[k]);
 		}
 	}
 	return cur;
