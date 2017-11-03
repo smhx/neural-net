@@ -31,9 +31,22 @@ Network::Network(const vector<int>& sizes) {
 	}
 }
 
-double Network::feedForward(int a) {
-	//...
-	return 0.0;
+Network::vdbl Network::feedForward(vdbl& a) {
+	vdbl pre=a, cur;
+	for (int i = 0; i + 1 < layerSizes.size(); ++i) {
+		// update layer i + 1 from layer i
+		cur = vdbl(layerSizes[i+1]);
+		for (int j = 0; j < layerSizes[i]; ++j) {
+			for (int k = 0; k < layerSizes[i+1]; ++k) {
+				cur[k] += weights[i][j][k] * pre[j];
+			}
+		}
+
+		for (int k = 0; k < cur.size(); ++k) {
+			cur[k] = sigmoid(cur[k]);
+		}
+	}
+	return cur;
 }
 
 
@@ -59,3 +72,6 @@ void Network::updateBatch(vector<Data>& batch, double trainingRate) {
 		//...
 	}
 }
+
+inline double Network::sigmoid(double x) {return 1.0 / (1.0 + exp(-x));}
+inline double Network::sigmoidPrime(double x) {return sigmoid(x)*(1-sigmoid(x));}
