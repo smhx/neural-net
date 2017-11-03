@@ -57,22 +57,21 @@ Network::Network(const vector<int>& sizes) {
 	// })
 }
 
-Network::vdbl Network::feedForward(vdbl& a) {
-	vdbl activation=a, dot;
+void Network::feedForward(vdbl& a) {
+	vdbl dot;
 	for (int i = 0; i + 1 < layerSizes.size(); ++i) {
 		// update layer i + 1 from layer i
 		dot = vdbl(0.0, layerSizes[i+1]);
 		for (int j = 0; j < layerSizes[i]; ++j) {
 			for (int k = 0; k < layerSizes[i+1]; ++k) {
-				dot[k] += weights[i][j][k] * activation[j];
+				dot[k] += weights[i][j][k] * a[j];
 			}
 		}
-		activation.resize(dot.size());
-		for (int k = 0; k < activation.size(); ++k) {
-			activation[k] = sigmoid(dot[k]+biases[i+1][k]);
+		a.resize(dot.size());
+		for (int k = 0; k < a.size(); ++k) {
+			a[k] = sigmoid(dot[k]+biases[i+1][k]);
 		}
 	}
-	return activation;
 }
 
 void Network::SGD(vector<Data>& data, int numEpochs, int batchSize, double trainingRate) {

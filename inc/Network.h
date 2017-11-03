@@ -24,7 +24,7 @@ public:
 
 	Network(const std::vector<int>& sizes);
 	void SGD(std::vector<Data>& data, int numEpochs, int batchSize, double trainingRate);
-	vdbl feedForward(vdbl& inputLayer);
+	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
 
 private: // methods
 
@@ -51,7 +51,7 @@ private: // properties
 	// has size of layerSizes.size()
 	v2dbl biases;
 
-	// Random stuff
+	// Random stuff 
 
 	// random device class instance, source of 'true' randomness for initializing random seed
 	std::random_device randDev; 
