@@ -2,8 +2,5 @@
 #include "inc/Network.h"
 
 int main() {
-	// printf("%d\n", MAXN);
-	// vector<int> a;
-	//Howard's test comment
-	// Steven's test commend
+	printf("Hello World\n"); //it works!
 }
