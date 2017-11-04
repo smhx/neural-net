@@ -20,6 +20,7 @@ class Network {
 	Network(const std::vector<int>& sizes);
 	void SGD(std::vector<trdata>& trdata, int numEpochs, int batchSize, double trainingRate);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
+	void testBatch(const std::vector<trdata>& batch);
 
   private: // methods
 

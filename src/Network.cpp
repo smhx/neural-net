@@ -3,6 +3,7 @@
 using namespace std; // does not affect main.cpp
 
 typedef std::vector<double> vdbl;
+typedef std::pair<vdbl, vdbl> trdata;
 
 // initialize the network with random weights and biases
 Network::Network(const vector<int>& sizes) {
@@ -11,6 +12,8 @@ Network::Network(const vector<int>& sizes) {
 
 	// defaults to mean of 0.0, standard dev of 1.0
 	randDistribution = normal_distribution<double>(); 
+
+	numLayers = sizes.size();
 
 	layerSizes = sizes;
 
@@ -25,12 +28,15 @@ Network::Network(const vector<int>& sizes) {
 				biases[i][j] = randDistribution(randGen); // is a random double
 			}
 		}
-		
-		weights[i] = v2dbl(sizes[i]);
-		for (int j = 0; j < weights[i].size(); ++j) {
-			weights[i][j] = vdbl(sizes[i+1]);
-			for (int k = 0; k < weights[i][j].size(); ++k) {
-				weights[i][j][k] = randDistribution(randGen);
+		// don't set for output layer
+		if (i < numLayers - 1)
+		{
+			weights[i] = v2dbl(sizes[i]);
+			for (int j = 0; j < weights[i].size(); ++j)	{
+				weights[i][j] = vdbl(sizes[i + 1]);
+				for (int k = 0; k < weights[i][j].size(); ++k)	{
+					weights[i][j][k] = randDistribution(randGen);
+				}
 			}
 		}
 	}
@@ -41,7 +47,7 @@ void Network::feedForward(vdbl& a) {
 	vdbl dot;
 	for (int i = 0; i < numLayers - 1; ++i) {
 		// update layer i + 1 from layer i
-		dot = vdbl(0.0, layerSizes[i+1]);
+		dot = vdbl(layerSizes[i+1], 0.0);
 		for (int j = 0; j < layerSizes[i]; ++j) {
 			for (int k = 0; k < layerSizes[i+1]; ++k) {
 				dot[k] += weights[i][j][k] * a[j];
@@ -75,13 +81,13 @@ void Network::updateBatch(const vector<trdata>& batch, double trainingRate) {
 	// gradw[i][j][k] is the gradient for the weight from the jth node in layer i to the kth node in layer i+1
 	v2dbl gradb(numLayers), dgradb(numLayers);
 	for (int i = 0; i < numLayers; ++i) {
-		gradb[i] = dgradb[i] = vdbl(0.0, biases[i].size());
+		gradb[i] = dgradb[i] = vdbl(biases[i].size(), 0.0);
 	}
 	v3dbl gradw(numLayers - 1), dgradw(numLayers - 1);
 	for (int i = 0; i < numLayers - 1; ++i)	{
 		gradw[i] = dgradw[i] = v2dbl(weights[i].size());
 		for (int j = 0; j < weights[i].size(); ++j) {
-			gradw[i][j] = dgradw[i][j] = vdbl(0.0, weights[i][j].size());
+			gradw[i][j] = dgradw[i][j] = vdbl(weights[i][j].size(), 0.0);
 		}
 	}
 	// Range based loops by constant reference!
@@ -162,7 +168,7 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 		else {
 			// calculate delta of layer i from layer i+1
 			vdbl sp = sigmoidPrime(zs[i]);
-			vdbl x(0.0, layerSizes[i]);
+			vdbl x(layerSizes[i], 0.0);
 			for (int j = 0; j < layerSizes[i]; ++j)	{
 				for (int k = 0; k < layerSizes[i + 1]; ++k)	{
 					x[j] += weights[i][j][k] * delta[k];
@@ -182,6 +188,21 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 	return;
 }
 
+void Network::testBatch(const vector<trdata>& batch) {
+	int count = 0;
+	for (trdata data : batch) {
+		vdbl in = data.first, out = data.second;
+		feedForward(in);
+		bool correct = true;
+		for (int i = 0; i < in.size(); ++i) {
+			if (abs(in[i] - out[i]) > 0.5)
+				correct = false;
+		}
+		if (correct)
+			++count;
+	}
+	printf("Test Results: %d out of %d correct", count, batch.size());
+}
 
 inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
 
