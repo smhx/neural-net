@@ -27,7 +27,7 @@ class Network {
 
 	double sigmoidPrime(double x);
 
-	void updateBatch(std::vector<trdata>& batch, double trainingRate);
+	void updateBatch(const std::vector<trdata>& batch, double trainingRate);
 
 	void backprop(const trdata& trdata, v2dbl& dgradb, v3dbl& dgradw);
 

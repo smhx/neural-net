@@ -67,7 +67,7 @@ void Network::SGD(vector<trdata>& data, int numEpochs, int batchSize, double tra
 	}
 }
 
-void Network::updateBatch(vector<trdata>& batch, double trainingRate) {
+void Network::updateBatch(const vector<trdata>& batch, double trainingRate) {
 
 	// gradb[i][j] is the gradient for the bias of the jth node in layer i
 	// gradw[i][j][k] is the gradient for the weight from the jth node in layer i to the kth node in layer i+1
