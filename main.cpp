@@ -22,19 +22,24 @@ vdbl binary(int i, int bits)
 
 int main() {
 	srand(time(NULL));
-	int bits = 6;
-	vector<int> sizes({ bits, 2*bits, 2*bits });
+	int bits = 10;
+	vector<int> sizes({ bits, 10*bits, 10*bits, 2*bits });
 	Network n(sizes);
 	vector<trdata> training(10000), testing(100);
-	for (trdata& data : training) {
-		int num = rand() & ((1 << bits) - 1);
-		data.first = binary(num, bits);
-		data.second = binary(num*num, 2*bits);
-	}
-	for (trdata& data : testing)	{
+	vector<int> inTesting;
+	for (trdata& data : testing) {
 		int num = rand() & ((1 << bits) - 1);
 		data.first = binary(num, bits);
 		data.second = binary(num*num, 2 * bits);
+		inTesting.push_back(num);
+	}
+	for (trdata& data : training) {
+		int num;
+		do {
+			num = rand() & ((1 << bits) - 1);
+		} while (find(inTesting.begin(), inTesting.end(), num) != inTesting.end());
+		data.first = binary(num, bits);
+		data.second = binary(num*num, 2*bits);
 	}
 	n.SGD(training, 30, 10, 3, testing);
 }
