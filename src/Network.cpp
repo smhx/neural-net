@@ -208,7 +208,7 @@ inline vdbl Network::multiply(const vdbl& x, const vdbl& y) {
 	return z;
 }
 
-inline vdbl costDerivative(const vdbl& activation, const vdbl& ans) {
+inline vdbl Network::costDerivative(const vdbl& activation, const vdbl& ans) {
 	vdbl x(ans.size());
 	for (int i = 0; i < ans.size(); ++i)
 		x[i] = activation[i] - ans[i];
