@@ -14,11 +14,11 @@ class Network {
 	typedef std::vector<vdbl> v2dbl;
 	typedef std::vector<v2dbl> v3dbl;
 	typedef std::pair<vdbl, vdbl> trdata; // training data
-
+	typedef std::vector<trdata> trbatch;
   public:
 
 	Network(const std::vector<int>& sizes);
-	void SGD(std::vector<trdata>& data, int numEpochs, int batchSize, double trainingRate, std::vector<trdata>& test);
+	void SGD(trbatch& data, int numEpochs, int batchSize, double trainingRate, trbatch& test);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
 
   private: // methods
@@ -30,11 +30,11 @@ class Network {
 	vdbl multiply(const vdbl& x, const vdbl& y);
 	vdbl costDerivative(const vdbl& activation, const vdbl& ans);
 
-	void updateBatch(const std::vector<trdata>& batch, double trainingRate);
+	void updateBatch(const trbatch& batch, double trainingRate);
 
 	void backprop(const trdata& trdata, v2dbl& dgradb, v3dbl& dgradw);
 
-	void testBatch(const std::vector<trdata>& batch);
+	void testBatch(const trbatch& batch);
 
   private: // properties
 

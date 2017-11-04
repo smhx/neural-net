@@ -23,9 +23,9 @@ vdbl binary(int i, int bits)
 int main() {
 	srand(time(NULL));
 	int bits = 10;
-	vector<int> sizes({ bits, 10*bits, 10*bits, 2*bits });
+	vector<int> sizes({ bits, 10*bits, 2*bits });
 	Network n(sizes);
-	vector<trdata> training(5000), testing(100);
+	vector<trdata> training(1000), testing(10);
 	vector<int> inTesting;
 	for (trdata& data : testing) {
 		int num = rand() & ((1 << bits) - 1);
@@ -33,14 +33,13 @@ int main() {
 		data.second = binary(num*num, 2 * bits);
 		inTesting.push_back(num);
 	}
-	sort(inTesting.begin(), inTesting.end());
-	int num = 0;
 	for (trdata& data : training) {
-		while (std::binary_search(inTesting.begin(), inTesting.end(), num))
-			num = (num + 1) & ((1 << bits) - 1);
+		int num;
+		do {
+			num = rand() & ((1 << bits) - 1);
+		} while (find(inTesting.begin(), inTesting.end(), num) != inTesting.end());
 		data.first = binary(num, bits);
 		data.second = binary(num*num, 2*bits);
-		num = (num + 1) & ((1 << bits) - 1);
 	}
-	n.SGD(training, 100, 1, 1, testing);
+	n.SGD(training, 100, 10, 3, testing);
 }
