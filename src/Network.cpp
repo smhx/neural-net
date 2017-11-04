@@ -60,12 +60,12 @@ void Network::feedForward(vdbl& a) {
 	}
 }
 
-void Network::SGD(vector<trdata>& data, int numEpochs, int batchSize, double trainingRate, vector<trdata>& test) {
+void Network::SGD(trbatch& data, int numEpochs, int batchSize, double trainingRate, trbatch& test) {
 	for (int epoch = 1; epoch <= numEpochs; ++epoch) {
 		shuffle(data.begin(), data.end(), randGen);
-		vector< vector<trdata> > batches;
+		vector< trbatch > batches;
 		for (int i = 0; i < data.size(); ++i) {
-			if (i%batchSize == 0) batches.push_back(vector<trdata>());
+			if (i%batchSize == 0) batches.push_back(trbatch());
 			batches.back().push_back(data[i]);
 		}
 		for (auto batch : batches) {
@@ -76,7 +76,7 @@ void Network::SGD(vector<trdata>& data, int numEpochs, int batchSize, double tra
 	}
 }
 
-void Network::updateBatch(const vector<trdata>& batch, double trainingRate) {
+void Network::updateBatch(const trbatch& batch, double trainingRate) {
 
 	// gradb[i][j] is the gradient for the bias of the jth node in layer i
 	// gradw[i][j][k] is the gradient for the weight from the jth node in layer i to the kth node in layer i+1
@@ -189,7 +189,7 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 	return;
 }
 
-void Network::testBatch(const vector<trdata>& batch) {
+void Network::testBatch(const trbatch& batch) {
 	int count = 0;
 	for (trdata data : batch) {
 		vdbl in = data.first, out = data.second;
