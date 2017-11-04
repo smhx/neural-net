@@ -60,7 +60,7 @@ void Network::feedForward(vdbl& a) {
 	}
 }
 
-void Network::SGD(vector<trdata>& data, int numEpochs, int batchSize, double trainingRate) {
+void Network::SGD(vector<trdata>& data, int numEpochs, int batchSize, double trainingRate, vector<trdata>& test) {
 	for (int epoch = 1; epoch <= numEpochs; ++epoch) {
 		shuffle(data.begin(), data.end(), randGen);
 		vector< vector<trdata> > batches;
@@ -70,8 +70,9 @@ void Network::SGD(vector<trdata>& data, int numEpochs, int batchSize, double tra
 		}
 		for (auto batch : batches) {
 			updateBatch(batch, trainingRate);
-			printf("Epoch %d complete\n", epoch);
 		}
+		printf("Epoch %d complete, ", epoch);
+		testBatch(test);
 	}
 }
 
@@ -157,8 +158,8 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 	}
 
 	// backpropagate
+	vdbl delta;
 	for (int i = numLayers - 1; i > 0; --i) {
-		vdbl delta;
 		if (i == numLayers - 1)	{
 			// calculate delta of last layer
 			vdbl sp = sigmoidPrime(zs[i]);
@@ -201,7 +202,7 @@ void Network::testBatch(const vector<trdata>& batch) {
 		if (correct)
 			++count;
 	}
-	printf("Test Results: %d out of %d correct", count, batch.size());
+	printf("Test Results: %d out of %lu correct\n", count, batch.size());
 }
 
 inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }

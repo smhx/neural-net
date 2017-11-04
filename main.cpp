@@ -22,10 +22,10 @@ vdbl binary(int i, int bits)
 
 int main() {
 	srand(time(NULL));
-	int bits = 20;
+	int bits = 6;
 	vector<int> sizes({ bits, 2*bits, 2*bits });
 	Network n(sizes);
-	vector<trdata> training(10000), testing(1000);
+	vector<trdata> training(10000), testing(100);
 	for (trdata& data : training) {
 		int num = rand() & ((1 << bits) - 1);
 		data.first = binary(num, bits);
@@ -36,6 +36,5 @@ int main() {
 		data.first = binary(num, bits);
 		data.second = binary(num*num, 2 * bits);
 	}
-	n.SGD(training, 100, 10, 1);
-	n.testBatch(testing);
+	n.SGD(training, 30, 10, 3, testing);
 }

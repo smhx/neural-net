@@ -18,9 +18,8 @@ class Network {
   public:
 
 	Network(const std::vector<int>& sizes);
-	void SGD(std::vector<trdata>& trdata, int numEpochs, int batchSize, double trainingRate);
+	void SGD(std::vector<trdata>& data, int numEpochs, int batchSize, double trainingRate, std::vector<trdata>& test);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
-	void testBatch(const std::vector<trdata>& batch);
 
   private: // methods
 
@@ -34,6 +33,8 @@ class Network {
 	void updateBatch(const std::vector<trdata>& batch, double trainingRate);
 
 	void backprop(const trdata& trdata, v2dbl& dgradb, v3dbl& dgradw);
+
+	void testBatch(const std::vector<trdata>& batch);
 
   private: // properties
 
