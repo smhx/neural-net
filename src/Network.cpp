@@ -58,6 +58,7 @@ Network::Network(const vector<int>& sizes) {
 }
 
 void Network::feedForward(vdbl& a) {
+	// a is initially the vector of inputs
 	vdbl dot;
 	for (int i = 0; i < numLayers - 1; ++i) {
 		// update layer i + 1 from layer i
@@ -79,7 +80,7 @@ void Network::SGD(vector<Data>& data, int numEpochs, int batchSize, double train
 		shuffle(data.begin(), data.end(), randGen);
 		vector< vector<Data> > batches;
 		for (int i = 0; i < data.size(); ++i) {
-			if (i%batchSize==0) batches.push_back(vector<Data>());
+			if (i%batchSize == 0) batches.push_back(vector<Data>());
 			batches.back().push_back(data[i]);
 		}
 		for (auto batch : batches) {
@@ -91,14 +92,14 @@ void Network::SGD(vector<Data>& data, int numEpochs, int batchSize, double train
 
 void Network::updateBatch(vector<Data>& batch, double trainingRate) {
 
-	// gradb[i][j] is gradient for b node j in layer i
-	// gradw[i][j][k] is gradient for weight from layer i to i+1 of j in i to k in i+1
-	v2dbl gradb(biases.size()), dgradb(biases.size()); 
-	for (int i = 0; i < biases.size(); ++i) {
+	// gradb[i][j] is the gradient for the bias of the jth node in layer i
+	// gradw[i][j][k] is the gradient for the weight from the jth node in layer i to the kth node in layer i+1
+	v2dbl gradb(numLayers), dgradb(numLayers);
+	for (int i = 0; i < numLayers; ++i) {
 		gradb[i] = dgradb[i] = vdbl(0.0, biases[i].size());
 	}
-	v3dbl gradw(weights.size()), dgradw(weights.size());
-	for (int i = 0; i < weights.size(); ++i) {
+	v3dbl gradw(numLayers - 1), dgradw(numLayers - 1);
+	for (int i = 0; i < numLayers - 1; ++i)	{
 		gradw[i] = dgradw[i] = v2dbl(weights[i].size());
 		for (int j = 0; j < weights[i].size(); ++j) {
 			gradw[i][j] = dgradw[i][j] = vdbl(0.0, weights[i][j].size());
