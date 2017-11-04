@@ -2,12 +2,6 @@
 
 using namespace std; // does not affect main.cpp
 
-// all #defines are not visible in main.cpp
-// possibly useful traversing macros
-// #define FOR1(i, v, exp) for(int i=0;i<v.size();++i){exp}
-// #define FOR2(i, j, v, exp) for(int i=0;i<v.size();++i){for(int j=0;j<v[i].size();++j){exp}}
-// #define FOR3(i, j, k, v, exp) for(int i=0;i<v.size();++i){for(int j=0;j<v[i].size();++j){for(int k=0; k<v[i][j].size();++k){exp}}}
-
 // initialize the network with random weights and biases
 Network::Network(const vector<int>& sizes) {
 
@@ -38,23 +32,6 @@ Network::Network(const vector<int>& sizes) {
 			}
 		}
 	}
-	// equiv to
-	// FOR1(i, sizes, {
-	// 	if (i) { 
-	// 		biases[i] = vdbl(sizes[i]);
-	// 		for (int j = 0; j < biases[i].size(); ++j) {
-	// 			biases[i][j] = randDistribution(randGen); // is a random double
-	// 		}
-	// 	}
-		
-	// 	weights[i] = v2dbl(sizes[i]);
-	// 	for (int j = 0; j < weights[i].size(); ++j) {
-	// 		weights[i][j] = vdbl(sizes[i+1]);
-	// 		for (int k = 0; k < weights[i][j].size(); ++k) {
-	// 			weights[i][j][k] = randDistribution(randGen);
-	// 		}
-	// 	}
-	// })
 }
 
 void Network::feedForward(vdbl& a) {
@@ -131,16 +108,12 @@ void Network::updateBatch(vector<Data>& batch, double trainingRate) {
 		}
 	}
 
-	// FOR2(i, j, biases, biases[i][j] -= trainingRate/static_cast<double>(batch.size()) * gradb[i][j];)
-	// equivalent to
 	for (int i = 0; i < biases.size(); ++i) {
 		for (int j = 0; j < biases[i].size(); ++j) {
 			biases[i][j] -= trainingRate/static_cast<double>(batch.size()) * gradb[i][j];
 		}
 	}
 
-	// FOR3(i, j, k, weights, weights[i][j][k] -= trainingRate/static_cast<double>(batch.size()) * gradw[i][j][k];)
-	// equivalent to
 	for (int i = 0; i < weights.size(); ++i) {
 		for (int j = 0; j < weights[i].size(); ++j) {
 			for (int k = 0; k < weights[i][j].size(); ++k) {
