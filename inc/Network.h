@@ -24,8 +24,11 @@ class Network {
   private: // methods
 
 	double sigmoid(double x);
-
 	double sigmoidPrime(double x);
+	vdbl sigmoid(const vdbl& x);
+	vdbl sigmoidPrime(const vdbl& x);
+	vdbl multiply(const vdbl& x, const vdbl& y);
+	vdbl costDerivative(const vdbl& activation, const vdbl& ans);
 
 	void updateBatch(const std::vector<trdata>& batch, double trainingRate);
 

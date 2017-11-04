@@ -2,6 +2,8 @@
 
 using namespace std; // does not affect main.cpp
 
+typedef std::vector<double> vdbl;
+
 // initialize the network with random weights and biases
 Network::Network(const vector<int>& sizes) {
 
@@ -124,10 +126,91 @@ void Network::updateBatch(const vector<trdata>& batch, double trainingRate) {
 
 }
 
-void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw){
+void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
+{
+	vdbl a = data.first;
+	v2dbl activations(numLayers);
+	activations[0] = a;
+	v2dbl zs(numLayers);
+
+	// feedforward
+	for (int i = 0; i < numLayers - 1; ++i)
+	{
+		// calculate a and z of layer i+1 from layer i
+		// a = sigma(z)
+		vdbl z = biases[i + 1];
+		for (int j = 0; j < layerSizes[i]; ++j) {
+			for (int k = 0; k < layerSizes[i + 1]; ++k)	{
+				z[k] += weights[i][j][k] * a[j];
+			}
+		}
+		zs[i + 1] = z;
+		a.resize(layerSizes[i + 1]);
+		a = sigmoid(z);
+		activations[i + 1] = a;
+	}
+
+	// backpropagate
+	for (int i = numLayers - 1; i > 0; --i) {
+		vdbl delta;
+		if (i == numLayers - 1)	{
+			// calculate delta of last layer
+			vdbl sp = sigmoidPrime(zs[i]);
+			vdbl x = costDerivative(activations[numLayers - 1], data.second);
+			delta = multiply(x, sp);
+		}
+		else {
+			// calculate delta of layer i from layer i+1
+			vdbl sp = sigmoidPrime(zs[i]);
+			vdbl x(0.0, layerSizes[i]);
+			for (int j = 0; j < layerSizes[i]; ++j)	{
+				for (int k = 0; k < layerSizes[i + 1]; ++k)	{
+					x[j] += weights[i][j][k] * delta[k];
+				}
+			}
+			delta = multiply(x, sp);
+		}
+
+		// calculate change for bias[i] and weights[i-1]
+		dgradb[i] = delta;
+		for (int j = 0; j < layerSizes[i-1]; ++j) {
+			for (int k = 0; k < layerSizes[i]; ++k)	{
+				dgradw[i-1][j][k] = activations[i-1][j] * delta[k];
+			}
+		}
+	}
 	return;
 }
 
 
-inline double Network::sigmoid(double x) {return 1.0 / (1.0 + exp(-x));}
-inline double Network::sigmoidPrime(double x) {return sigmoid(x)*(1-sigmoid(x));}
+inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
+
+inline double Network::sigmoidPrime(double x) { return sigmoid(x)*(1 - sigmoid(x)); }
+
+inline vdbl Network::sigmoid(const vdbl& x) {
+	vdbl y(x.size());
+	for (int i = 0; i < x.size(); ++i)
+		y[i] = sigmoid(x[i]);
+	return y;
+}
+
+inline vdbl Network::sigmoidPrime(const vdbl& x) {
+	vdbl y(x.size());
+	for (int i = 0; i < x.size(); ++i)
+		y[i] = sigmoidPrime(x[i]);
+	return y;
+}
+
+inline vdbl Network::multiply(const vdbl& x, const vdbl& y) {
+	vdbl z(x.size());
+	for (int i = 0; i < x.size(); ++i)
+		z[i] = x[i]*y[i];
+	return z;
+}
+
+inline vdbl costDerivative(const vdbl& activation, const vdbl& ans) {
+	vdbl x(ans.size());
+	for (int i = 0; i < ans.size(); ++i)
+		x[i] = activation[i] - ans[i];
+	return x;
+}
