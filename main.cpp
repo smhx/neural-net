@@ -4,7 +4,6 @@
 #include <cstdlib>
 
 #include "inc/Network.h"
-#include "inc/Data.h"
 
 using namespace std;
 

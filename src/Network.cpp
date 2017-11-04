@@ -52,12 +52,12 @@ void Network::feedForward(vdbl& a) {
 	}
 }
 
-void Network::SGD(vector<Data>& data, int numEpochs, int batchSize, double trainingRate) {
+void Network::SGD(vector<trdata>& data, int numEpochs, int batchSize, double trainingRate) {
 	for (int epoch = 1; epoch <= numEpochs; ++epoch) {
 		shuffle(data.begin(), data.end(), randGen);
-		vector< vector<Data> > batches;
+		vector< vector<trdata> > batches;
 		for (int i = 0; i < data.size(); ++i) {
-			if (i%batchSize == 0) batches.push_back(vector<Data>());
+			if (i%batchSize == 0) batches.push_back(vector<trdata>());
 			batches.back().push_back(data[i]);
 		}
 		for (auto batch : batches) {
@@ -67,7 +67,7 @@ void Network::SGD(vector<Data>& data, int numEpochs, int batchSize, double train
 	}
 }
 
-void Network::updateBatch(vector<Data>& batch, double trainingRate) {
+void Network::updateBatch(vector<trdata>& batch, double trainingRate) {
 
 	// gradb[i][j] is the gradient for the bias of the jth node in layer i
 	// gradw[i][j][k] is the gradient for the weight from the jth node in layer i to the kth node in layer i+1
@@ -82,8 +82,8 @@ void Network::updateBatch(vector<Data>& batch, double trainingRate) {
 			gradw[i][j] = dgradw[i][j] = vdbl(0.0, weights[i][j].size());
 		}
 	}
-
-	for (Data data : batch) {
+	// Range based loops by constant reference!
+	for (const trdata& data : batch) { 
 
 		// dgradb[i][j] is the partial derivative of the cost function 
 		// for the current data relative to b[i][j]
@@ -124,7 +124,7 @@ void Network::updateBatch(vector<Data>& batch, double trainingRate) {
 
 }
 
-void Network::backprop(Data& data, v2dbl& dgradb, v3dbl& dgradw){
+void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw){
 	return;
 }
 

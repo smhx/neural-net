@@ -7,36 +7,31 @@
 #include <cstdio>
 #include <cmath>
 
-// #define MAXN 100005 all #defines are visible in main.cpp
-
-#include "Data.h"
-
-// using namespace std; Should not use namespace in header file!
-
 class Network {
 
-private:
+  private:
 	typedef std::vector<double> vdbl;
 	typedef std::vector<vdbl> v2dbl;
 	typedef std::vector<v2dbl> v3dbl;
+	typedef std::pair<vdbl, vdbl> trdata; // training data
 
-public:
+  public:
 
 	Network(const std::vector<int>& sizes);
-	void SGD(std::vector<Data>& data, int numEpochs, int batchSize, double trainingRate);
+	void SGD(std::vector<trdata>& trdata, int numEpochs, int batchSize, double trainingRate);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
 
-private: // methods
+  private: // methods
 
 	double sigmoid(double x);
 
 	double sigmoidPrime(double x);
 
-	void updateBatch(std::vector<Data>& batch, double trainingRate);
+	void updateBatch(std::vector<trdata>& batch, double trainingRate);
 
-	void backprop(Data& data, v2dbl& dgradb, v3dbl& dgradw);
+	void backprop(const trdata& trdata, v2dbl& dgradb, v3dbl& dgradw);
 
-private: // properties
+  private: // properties
 
 	// the number of layers in the network
 	int numLayers;
