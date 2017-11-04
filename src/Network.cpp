@@ -8,7 +8,7 @@ using namespace std; // does not affect main.cpp
 // #define FOR2(i, j, v, exp) for(int i=0;i<v.size();++i){for(int j=0;j<v[i].size();++j){exp}}
 // #define FOR3(i, j, k, v, exp) for(int i=0;i<v.size();++i){for(int j=0;j<v[i].size();++j){for(int k=0; k<v[i][j].size();++k){exp}}}
 
-
+// initialize the network with random weights and biases
 Network::Network(const vector<int>& sizes) {
 
 	randGen = mt19937(randDev()); 
@@ -21,7 +21,7 @@ Network::Network(const vector<int>& sizes) {
 	biases = v2dbl(sizes.size());
 	weights = v3dbl(sizes.size()-1);
 
-	for (int i = 0; i < sizes.size(); ++i) {
+	for (int i = 0; i < numLayers; ++i) {
 		// don't set for input layer
 		if (i) { 
 			biases[i] = vdbl(sizes[i]);
@@ -59,7 +59,7 @@ Network::Network(const vector<int>& sizes) {
 
 void Network::feedForward(vdbl& a) {
 	vdbl dot;
-	for (int i = 0; i + 1 < layerSizes.size(); ++i) {
+	for (int i = 0; i < numLayers - 1; ++i) {
 		// update layer i + 1 from layer i
 		dot = vdbl(0.0, layerSizes[i+1]);
 		for (int j = 0; j < layerSizes[i]; ++j) {

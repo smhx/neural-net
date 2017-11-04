@@ -38,17 +38,22 @@ private: // methods
 
 private: // properties
 
+	// the number of layers in the network
+	int numLayers;
+
 	// the size of layer i with layer 0 = input layer
 	std::vector<int> layerSizes;
 
-	// size of weights is number of layers - 1
-	// each element of weights ia a weight matrix from layer i to layer i+1
+	// size of weights is numLayers - 1
+	// each element of weights is a weight matrix from layer i to layer i+1
 	// so weights[i] is a layerSizes[i] x layerSizes[i+1] matrix
+	// weights[i][j][k] is the weight of the edge from the jth node in layer i to the kth node in layer i+1
 	v3dbl weights; 
 
 	// bias of layer i
 	// skip i = 0 cuz input has no bias
-	// has size of layerSizes.size()
+	// has size of numLayers
+	// bias[i][k] is the bias of the jth node in layer i
 	v2dbl biases;
 
 	// Random stuff 
