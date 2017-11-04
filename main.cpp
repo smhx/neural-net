@@ -21,16 +21,17 @@ vdbl binary(int i, int bits)
 }
 
 int main() {
+	srand(time(NULL));
 	int bits = 20;
 	vector<int> sizes({ bits, 2*bits, 2*bits });
 	Network n(sizes);
 	vector<trdata> training(10000), testing(1000);
-	for (trdata data : training) {
+	for (trdata& data : training) {
 		int num = rand() & ((1 << bits) - 1);
 		data.first = binary(num, bits);
 		data.second = binary(num*num, 2*bits);
 	}
-	for (trdata data : testing)	{
+	for (trdata& data : testing)	{
 		int num = rand() & ((1 << bits) - 1);
 		data.first = binary(num, bits);
 		data.second = binary(num*num, 2 * bits);
