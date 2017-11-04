@@ -25,7 +25,7 @@ int main() {
 	int bits = 10;
 	vector<int> sizes({ bits, 10*bits, 10*bits, 2*bits });
 	Network n(sizes);
-	vector<trdata> training(10000), testing(100);
+	vector<trdata> training(5000), testing(100);
 	vector<int> inTesting;
 	for (trdata& data : testing) {
 		int num = rand() & ((1 << bits) - 1);
@@ -33,13 +33,14 @@ int main() {
 		data.second = binary(num*num, 2 * bits);
 		inTesting.push_back(num);
 	}
+	sort(inTesting.begin(), inTesting.end());
+	int num = 0;
 	for (trdata& data : training) {
-		int num;
-		do {
-			num = rand() & ((1 << bits) - 1);
-		} while (find(inTesting.begin(), inTesting.end(), num) != inTesting.end());
+		while (std::binary_search(inTesting.begin(), inTesting.end(), num))
+			num = (num + 1) & ((1 << bits) - 1);
 		data.first = binary(num, bits);
 		data.second = binary(num*num, 2*bits);
+		num = (num + 1) & ((1 << bits) - 1);
 	}
-	n.SGD(training, 30, 10, 3, testing);
+	n.SGD(training, 100, 1, 1, testing);
 }
