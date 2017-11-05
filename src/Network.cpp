@@ -34,8 +34,8 @@ Network::Network(const vector<int>& sizes) {
 			weights[i] = v2dbl(sizes[i]);
 			for (int j = 0; j < weights[i].size(); ++j)	{
 				weights[i][j] = vdbl(sizes[i + 1]);
-				for (int k = 0; k < weights[i][j].size(); ++k)	{
-					weights[i][j][k] = randDistribution(randGen);
+				for (int k = 0; k < weights[i][j].size(); ++k) {
+					weights[i][j][k] = randDistribution(randGen);// / sqrt(sizes[i]);
 				}
 			}
 		}
@@ -71,7 +71,7 @@ void Network::SGD(trbatch& data, int numEpochs, int batchSize, double trainingRa
 		for (auto batch : batches) {
 			updateBatch(batch, trainingRate);
 		}
-		printf("Epoch %d complete, ", epoch);
+		printf("Epoch %d: ", epoch);
 		testBatch(test);
 	}
 }
@@ -163,8 +163,9 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 		if (i == numLayers - 1)	{
 			// calculate delta of last layer
 			vdbl sp = sigmoidPrime(zs[i]);
-			vdbl x = costDerivative(activations[numLayers-1], data.second);
-			delta = multiply(x, sp);
+			vdbl x = costDerivative(activations[i], data.second);
+			// delta = multiply(x, sp); //for quadratic cost
+			delta = x; // for cross-entropy cost
 		}
 		else {
 			// calculate delta of layer i from layer i+1
@@ -175,7 +176,6 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 					x[j] += weights[i][j][k] * delta[k];
 				}
 			}
-			delta.resize(layerSizes[i]);
 			delta = multiply(x, sp);
 		}
 
@@ -192,18 +192,27 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 
 void Network::testBatch(const trbatch& batch) {
 	int count = 0;
+	double cost = 0.0;
 	for (trdata data : batch) {
 		vdbl in = data.first, out = data.second;
 		feedForward(in);
-		bool correct = true;
+		//check if correct
+		double max = in[0]; int index = 0;
 		for (int i = 0; i < in.size(); ++i) {
-			if (abs(in[i] - out[i]) > 0.5)
-				correct = false;
+			if (in[i] > max) {
+				max = in[i];
+				index = i;
+			}
 		}
-		if (correct)
+		if (out[index] > 0.9)
 			++count;
+		//calculate cost
+		for (int i = 0; i < in.size(); ++i) {
+			// cost += 0.5*(in[i] - out[i])*(in[i] - out[i]) / (batch.size()); for quadratic cost
+			cost -= (out[i] * log(in[i]) + (1 - out[i])*log(1 - in[i])) / batch.size();
+		}
 	}
-	printf("Test Results: %d out of %lu correct\n", count, batch.size());
+	printf("%d/%lu correct, cost = %f\n", count, batch.size(), cost);
 }
 
 inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }

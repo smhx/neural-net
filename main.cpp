@@ -20,32 +20,36 @@ vdbl binary(long long i, int bits)
 	return v;
 }
 
+vdbl mod10(long long i)
+{
+	vdbl v(10, 0.0);
+	v[i % 10] = 1.0;
+	return v;
+}
+
 int main() {
 	srand(time(NULL));
-	int bits = 12;
-	vector<int> sizes({ bits, bits*bits, 2*bits });
+	int bits = 15;
+	vector<int> sizes({ bits, 8*bits, 10 });
 	Network n(sizes);
-	vector<trdata> training(1 << bits), testing(1000);
+	vector<trdata> training(1<<bits), testing(100);
 
-	vector<int> inTesting;
 	for (trdata& data : testing) {
-		long long num = rand() & ((1 << bits) - 1);
-		data.first = binary(num, bits);
-		data.second = binary(num*num, 2 * bits);
-	}
-	for (int i = 0; i < 1 << bits; ++i) {
-		int num = i;// &((1 << bits) - 1);
-		training[i].first = binary(num, bits);
-		training[i].second = binary(num*num, 2*bits);
-	}
-	/*
+		long long i = rand() & ((1 << bits) - 1);
+		data.first = binary(i, bits);
+		data.second = mod10(i);
+	}/*
 	for (trdata& data : training) {
-		long long num = rand() & ((1 << bits) - 1);
-		data.first = binary(num, bits);
-		data.second = binary(num*num, 2*bits);
+		long long i = rand() & ((1 << bits) - 1);
+		data.first = binary(i, bits);
+		data.second = mod10(i);
 	}*/
+	for (int i = 0; i < 1 << bits; ++i) {
+		training[i].first = binary(i, bits);
+		training[i].second = mod10(i);
+	}
 
-	n.SGD(training, 1000, 50, 10, testing);
+	n.SGD(training, 1000, 10, 0.1, testing);
 }
 
 /*
