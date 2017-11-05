@@ -51,7 +51,7 @@ int main() {
 		training[i].second = binary(i*i, 2*bits);
 	}
 
-	n.SGD(training, 1000, 20, 4, testing);
+	n.SGD(training, 2000, 20, 1, 0.5, testing);
 }
 
 /*

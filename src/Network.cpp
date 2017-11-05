@@ -60,9 +60,10 @@ void Network::feedForward(vdbl& a) {
 	}
 }
 
-void Network::SGD(trbatch& data, int numEpochs, int batchSize, double trainingRate, trbatch& test) {
+void Network::SGD(trbatch& data, int numEpochs, int batchSize, double maxRate, double minRate, trbatch& test) {
 
-	learningRate = initLearningRate = trainingRate; // Initial trainginrate
+	learningRate = maxLearningRate = maxRate; // Initial learning rate
+	minLearningRate = minRate;
 	for (int epoch = 1; epoch <= numEpochs; ++epoch) {
 		shuffle(data.begin(), data.end(), randGen);
 		vector< trbatch > batches;
@@ -215,7 +216,7 @@ void Network::testBatch(const trbatch& batch) {
 		if (works) ++count;
 		//calculate cost
 		for (int i = 0; i < in.size(); ++i) {
-			// cost += 0.5*(in[i] - out[i])*(in[i] - out[i]) / (batch.size()); for quadratic cost
+			// cost += 0.5*(in[i] - out[i])*(in[i] - out[i]) / (batch.size()); // for quadratic cost
 			if (in[i] <= 0 || 1-in[i]<= 0) {
 				// printf("ERROR!!!!!!! in[i] = %lf, out[i] = %lf\n", in[i], out[i]);
 				continue;
@@ -224,10 +225,11 @@ void Network::testBatch(const trbatch& batch) {
 			cost -= (out[i] * log(in[i]) + (1 - out[i])*log(1 - in[i])) / batch.size();
 		}
 	}
+	double frac = (double)count / (double)batch.size();
+	maxfrac = max(maxfrac, frac);
+	learningRate = frac*minLearningRate + (1-frac)*maxLearningRate;
 
-	learningRate = min(4.0, max(1.0, (1.0 - (double)count/(double)batch.size() * (double)count/(double)batch.size())* initLearningRate) );
-
-	printf("%d/%lu correct, cost = %f, lrate now %lf\n", count, batch.size(), cost, learningRate);
+	printf("%d/%lu correct, cost = %f, lrate = %lf, maxfrac = %f\n", count, batch.size(), cost, learningRate, maxfrac);
 }
 
 inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
