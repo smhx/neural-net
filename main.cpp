@@ -29,8 +29,8 @@ vdbl mod10(long long i)
 
 int main() {
 	srand(time(NULL));
-	int bits = 10;
-	vector<int> sizes({ bits, bits*8, 2*bits });
+	int bits = 6;
+	vector<int> sizes({ bits, bits*20, 2*bits });
 	Network n(sizes);
 	vector<trdata> training(1<<bits), testing(100);
 
@@ -51,7 +51,8 @@ int main() {
 		training[i].second = binary(i*i, 2*bits);
 	}
 
-	n.SGD(training, 1000, 20, 4, testing);
+	n.SGD(training, 200, 20, 3, testing);
+	n.write("tests/test.txt");
 }
 
 /*

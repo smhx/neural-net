@@ -4,8 +4,10 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-#include <cstdio>
+#include <iostream>
 #include <cmath>
+#include <string>
+#include <fstream>
 
 class Network {
 
@@ -18,8 +20,11 @@ class Network {
   public:
 
 	Network(const std::vector<int>& sizes);
+	Network(std::string fname);
 	void SGD(trbatch& data, int numEpochs, int batchSize, double trainingRate, trbatch& test);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
+
+	void write(std::string fname);
 
   private: // methods
 

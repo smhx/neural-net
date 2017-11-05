@@ -42,6 +42,60 @@ Network::Network(const vector<int>& sizes) {
 	}
 }
 
+Network::Network(string fname) {
+	cout << "input from fname = " << fname << "\n";
+	ifstream fin(fname);
+	if (!fin.good()) {
+		printf("ERROR unknown file\n");
+		return;
+	}
+	fin >> numLayers;
+	cout << "numLayers = " << numLayers << "\n";
+	layerSizes = vector<int>(numLayers);
+	for (int i = 0; i < numLayers; ++i) {
+		fin >> layerSizes[i];
+	}
+	printf("got layers\n");
+	biases = v2dbl(numLayers);
+	for (int i = 1; i < numLayers; ++i) {
+		biases[i] = vdbl(layerSizes[i]);
+		for (int j = 0; j < layerSizes[i]; ++j) {
+			fin >> biases[i][j];
+		}
+	}
+	weights = v3dbl(numLayers-1);
+	printf("got biases\n");
+	for (int i = 0; i + 1 < numLayers; ++i) {
+		weights[i] = v2dbl(layerSizes[i]);
+		for (int j = 0; j < layerSizes[i]; ++j) {
+			weights[i][j] = vdbl(layerSizes[i+1]);
+			for (int k = 0; k < layerSizes[i+1]; ++k){
+				fin >> weights[i][j][k];
+			}
+		}
+	}
+}
+
+void Network::write(string fname) {
+	ofstream fout(fname);
+	fout << numLayers << "\n";
+	for (int sz : layerSizes) fout << sz << " ";
+	fout << "\n";
+	for (int i = 1; i < numLayers; ++i) {
+		for (int j = 0; j < layerSizes[i]; ++j) {
+			fout << biases[i][j] << " ";
+		}
+		fout << "\n";
+	}
+	for (int i = 0; i + 1 < numLayers; ++i) {
+		for (int j = 0; j < layerSizes[i]; ++j) {
+			for (int k = 0; k < layerSizes[i+1]; ++k){
+				fout << weights[i][j][k] << " ";
+			}
+		}
+	}
+}
+
 void Network::feedForward(vdbl& a) {
 	// a is initially the vector of inputs
 	vdbl dot;
@@ -257,7 +311,7 @@ inline vdbl Network::multiply(const vdbl& x, const vdbl& y) {
 
 inline vdbl Network::costDerivative(const vdbl& activation, const vdbl& ans) {
 	if (activation.size() != ans.size())
-		printf("Error in costDerivative: activation.size = %d, ans.size = %d\n", activation.size(), ans.size());
+		printf("Error in costDerivative: activation.size = %lu, ans.size = %lu\n", activation.size(), ans.size());
 	vdbl x(activation.size());
 	for (int i = 0; i < activation.size(); ++i)
 		x[i] = activation[i] - ans[i];
