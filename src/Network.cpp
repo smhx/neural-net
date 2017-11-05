@@ -157,18 +157,13 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 		activations[i + 1] = a;
 	}
 
-	// for debugging only
-	if (activations.size() > numLayers)
-		printf("Activations size too big: %lu\n", activations.size());
-
-
 	// backpropagate
 	vdbl delta(layerSizes[numLayers - 1]);
 	for (int i = numLayers - 1; i > 0; --i) {
 		if (i == numLayers - 1)	{
 			// calculate delta of last layer
 			vdbl sp = sigmoidPrime(zs[i]);
-			vdbl x = costDerivative(activations[i], data.second);
+			vdbl x = costDerivative(activations[numLayers-1], data.second);
 			delta = multiply(x, sp);
 		}
 		else {
