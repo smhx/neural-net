@@ -199,22 +199,33 @@ void Network::testBatch(const trbatch& batch) {
 		vdbl in = data.first, out = data.second;
 		feedForward(in);
 		//check if correct
-		double max = in[0]; int index = 0;
+		// double max = in[0]; int index = 0;
+		// for (int i = 0; i < in.size(); ++i) {
+		// 	if (in[i] > max) {
+		// 		max = in[i];
+		// 		index = i;
+		// 	}
+		// }
+		// if (out[index] > 0.9)
+		// 	++count;
+		bool works = true;
 		for (int i = 0; i < in.size(); ++i) {
-			if (in[i] > max) {
-				max = in[i];
-				index = i;
-			}
+			if (abs(in[i]-out[i]) >= 0.5) works = false;
 		}
-		if (out[index] > 0.9)
-			++count;
+		if (works) ++count;
 		//calculate cost
 		for (int i = 0; i < in.size(); ++i) {
 			// cost += 0.5*(in[i] - out[i])*(in[i] - out[i]) / (batch.size()); for quadratic cost
+			if (in[i] <= 0 || 1-in[i]<= 0) {
+				// printf("ERROR!!!!!!! in[i] = %lf, out[i] = %lf\n", in[i], out[i]);
+				continue;
+			}
+
 			cost -= (out[i] * log(in[i]) + (1 - out[i])*log(1 - in[i])) / batch.size();
 		}
 	}
-	learningRate = (1.0 - (double)count/(double)batch.size()) * initLearningRate;
+
+	learningRate = min(4.0, max(1.0, (1.0 - (double)count/(double)batch.size() * (double)count/(double)batch.size())* initLearningRate) );
 
 	printf("%d/%lu correct, cost = %f, lrate now %lf\n", count, batch.size(), cost, learningRate);
 }

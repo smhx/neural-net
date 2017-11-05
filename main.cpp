@@ -29,15 +29,16 @@ vdbl mod10(long long i)
 
 int main() {
 	srand(time(NULL));
-	int bits = 13;
-	vector<int> sizes({ bits, bits*8, 10 });
+	int bits = 10;
+	vector<int> sizes({ bits, bits*8, 2*bits });
 	Network n(sizes);
 	vector<trdata> training(1<<bits), testing(100);
 
 	for (trdata& data : testing) {
 		long long i = rand() & ((1 << bits) - 1);
 		data.first = binary(i, bits);
-		data.second = mod10(i);
+		// data.second = mod10(i);
+		data.second = binary(i*i, 2*bits);
 	}/*
 	for (trdata& data : training) {
 		long long i = rand() & ((1 << bits) - 1);
@@ -46,10 +47,11 @@ int main() {
 	}*/
 	for (int i = 0; i < 1 << bits; ++i) {
 		training[i].first = binary(i, bits);
-		training[i].second = mod10(i);
+		// training[i].second = mod10(i);
+		training[i].second = binary(i*i, 2*bits);
 	}
 
-	n.SGD(training, 1000, 20, 2, testing);
+	n.SGD(training, 1000, 20, 4, testing);
 }
 
 /*
