@@ -82,13 +82,13 @@ void Network::updateBatch(const trbatch& batch, double trainingRate) {
 	// gradw[i][j][k] is the gradient for the weight from the jth node in layer i to the kth node in layer i+1
 	v2dbl gradb(numLayers), dgradb(numLayers);
 	for (int i = 0; i < numLayers; ++i) {
-		gradb[i] = dgradb[i] = vdbl(biases[i].size(), 0.0);
+		gradb[i] = dgradb[i] = vdbl(layerSizes[i], 0.0);
 	}
 	v3dbl gradw(numLayers - 1), dgradw(numLayers - 1);
 	for (int i = 0; i < numLayers - 1; ++i)	{
-		gradw[i] = dgradw[i] = v2dbl(weights[i].size());
-		for (int j = 0; j < weights[i].size(); ++j) {
-			gradw[i][j] = dgradw[i][j] = vdbl(weights[i][j].size(), 0.0);
+		gradw[i] = dgradw[i] = v2dbl(layerSizes[i]);
+		for (int j = 0; j < layerSizes[i]; ++j)	{
+			gradw[i][j] = dgradw[i][j] = vdbl(layerSizes[i + 1], 0.0);
 		}
 	}
 	// Range based loops by constant reference!
@@ -157,13 +157,18 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 		activations[i + 1] = a;
 	}
 
+	// for debugging only
+	if (activations.size() > numLayers)
+		printf("Activations size too big: %lu\n", activations.size());
+
+
 	// backpropagate
-	vdbl delta;
+	vdbl delta(layerSizes[numLayers - 1]);
 	for (int i = numLayers - 1; i > 0; --i) {
 		if (i == numLayers - 1)	{
 			// calculate delta of last layer
 			vdbl sp = sigmoidPrime(zs[i]);
-			vdbl x = costDerivative(activations[numLayers - 1], data.second);
+			vdbl x = costDerivative(activations[i], data.second);
 			delta = multiply(x, sp);
 		}
 		else {
@@ -175,6 +180,7 @@ void Network::backprop(const trdata& data, v2dbl& dgradb, v3dbl& dgradw)
 					x[j] += weights[i][j][k] * delta[k];
 				}
 			}
+			delta.resize(layerSizes[i]);
 			delta = multiply(x, sp);
 		}
 
@@ -231,8 +237,10 @@ inline vdbl Network::multiply(const vdbl& x, const vdbl& y) {
 }
 
 inline vdbl Network::costDerivative(const vdbl& activation, const vdbl& ans) {
-	vdbl x(ans.size());
-	for (int i = 0; i < ans.size(); ++i)
+	if (activation.size() != ans.size())
+		printf("Error in costDerivative: activation.size = %d, ans.size = %d\n", activation.size(), ans.size());
+	vdbl x(activation.size());
+	for (int i = 0; i < activation.size(); ++i)
 		x[i] = activation[i] - ans[i];
 	return x;
 }
