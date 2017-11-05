@@ -30,7 +30,7 @@ class Network {
 	vdbl multiply(const vdbl& x, const vdbl& y);
 	vdbl costDerivative(const vdbl& activation, const vdbl& ans);
 
-	void updateBatch(const trbatch& batch, double trainingRate);
+	void updateBatch(const trbatch& batch);
 
 	void backprop(const trdata& trdata, v2dbl& dgradb, v3dbl& dgradw);
 
@@ -40,6 +40,8 @@ class Network {
 
 	// the number of layers in the network
 	int numLayers;
+
+	double learningRate, initLearningRate;
 
 	// the size of layer i with layer 0 = input layer
 	std::vector<int> layerSizes;

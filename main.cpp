@@ -29,8 +29,8 @@ vdbl mod10(long long i)
 
 int main() {
 	srand(time(NULL));
-	int bits = 15;
-	vector<int> sizes({ bits, 8*bits, 10 });
+	int bits = 13;
+	vector<int> sizes({ bits, bits*8, 10 });
 	Network n(sizes);
 	vector<trdata> training(1<<bits), testing(100);
 
@@ -49,7 +49,7 @@ int main() {
 		training[i].second = mod10(i);
 	}
 
-	n.SGD(training, 1000, 10, 0.1, testing);
+	n.SGD(training, 1000, 20, 2, testing);
 }
 
 /*

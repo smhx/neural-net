@@ -61,6 +61,8 @@ void Network::feedForward(vdbl& a) {
 }
 
 void Network::SGD(trbatch& data, int numEpochs, int batchSize, double trainingRate, trbatch& test) {
+
+	learningRate = initLearningRate = trainingRate; // Initial trainginrate
 	for (int epoch = 1; epoch <= numEpochs; ++epoch) {
 		shuffle(data.begin(), data.end(), randGen);
 		vector< trbatch > batches;
@@ -69,14 +71,14 @@ void Network::SGD(trbatch& data, int numEpochs, int batchSize, double trainingRa
 			batches.back().push_back(data[i]);
 		}
 		for (auto batch : batches) {
-			updateBatch(batch, trainingRate);
+			updateBatch(batch);
 		}
 		printf("Epoch %d: ", epoch);
 		testBatch(test);
 	}
 }
 
-void Network::updateBatch(const trbatch& batch, double trainingRate) {
+void Network::updateBatch(const trbatch& batch) {
 
 	// gradb[i][j] is the gradient for the bias of the jth node in layer i
 	// gradw[i][j][k] is the gradient for the weight from the jth node in layer i to the kth node in layer i+1
@@ -119,14 +121,14 @@ void Network::updateBatch(const trbatch& batch, double trainingRate) {
 
 	for (int i = 0; i < biases.size(); ++i) {
 		for (int j = 0; j < biases[i].size(); ++j) {
-			biases[i][j] -= trainingRate/static_cast<double>(batch.size()) * gradb[i][j];
+			biases[i][j] -= learningRate/static_cast<double>(batch.size()) * gradb[i][j];
 		}
 	}
 
 	for (int i = 0; i < weights.size(); ++i) {
 		for (int j = 0; j < weights[i].size(); ++j) {
 			for (int k = 0; k < weights[i][j].size(); ++k) {
-				weights[i][j][k] -= trainingRate/static_cast<double>(batch.size()) * gradw[i][j][k];
+				weights[i][j][k] -= learningRate/static_cast<double>(batch.size()) * gradw[i][j][k];
 			}
 		}
 	}
@@ -212,7 +214,9 @@ void Network::testBatch(const trbatch& batch) {
 			cost -= (out[i] * log(in[i]) + (1 - out[i])*log(1 - in[i])) / batch.size();
 		}
 	}
-	printf("%d/%lu correct, cost = %f\n", count, batch.size(), cost);
+	learningRate = (1.0 - (double)count/(double)batch.size()) * initLearningRate;
+
+	printf("%d/%lu correct, cost = %f, lrate now %lf\n", count, batch.size(), cost, learningRate);
 }
 
 inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
@@ -248,3 +252,4 @@ inline vdbl Network::costDerivative(const vdbl& activation, const vdbl& ans) {
 		x[i] = activation[i] - ans[i];
 	return x;
 }
+
