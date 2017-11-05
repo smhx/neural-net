@@ -10,11 +10,11 @@ using namespace std;
 typedef std::vector<double> vdbl;
 typedef std::pair<vdbl, vdbl> trdata;
 
-vdbl binary(int i, int bits)
+vdbl binary(long long i, int bits)
 {
 	vdbl v(bits, 0.0);
 	for (int j = 0; j < bits; ++j) {
-		if (i&(1 << j))
+		if (i&(1LL << j))
 			v[j] = 1.0;
 	}
 	return v;
@@ -23,23 +23,23 @@ vdbl binary(int i, int bits)
 int main() {
 	srand(time(NULL));
 	int bits = 10;
-	vector<int> sizes({ bits, 8*bits, 2*bits });
+	vector<int> sizes({ bits, 16*bits, 2*bits });
 	Network n(sizes);
-	vector<trdata> training(50000), testing(100);
+	vector<trdata> training(100000), testing(100);
 
 	vector<int> inTesting;
 	for (trdata& data : testing) {
-		int num = rand() & ((1 << bits) - 1);
+		long long num = rand() & ((1 << bits) - 1);
 		data.first = binary(num, bits);
 		data.second = binary(num*num, 2 * bits);
 	}
 	for (trdata& data : training) {
-		int num = rand() & ((1 << bits) - 1);
+		long long num = rand() & ((1 << bits) - 1);
 		data.first = binary(num, bits);
 		data.second = binary(num*num, 2*bits);
 	}
 
-	n.SGD(training, 100, 1, 1, testing);
+	n.SGD(training, 20, 10, 5, testing);
 }
 
 /*
