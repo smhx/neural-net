@@ -7,11 +7,11 @@ using namespace std;
 
 typedef vector<double> vdbl;
 
-const int bits = 10;
+const int bits = 8;
 
 int read(const vdbl& v) {
 	int toret = 0;
-	for (int i = 0; i < bits; ++i) {
+	for (int i = 0; i < v.size(); ++i) {
 		if (v[i] >= 0.5) toret |= 1 << i;
 	}
 	return toret;
@@ -39,10 +39,7 @@ int main() {
 		int x;
 		cin >> x;
 		if (x==-1) break;
-		if (x >= 1<<bits) {
-			cout << "error x is too large\n";
-			continue;
-		}
+		
 		vdbl in = binary(x);
 		n.feedForward(in);
 		int y = read(in);
