@@ -40,34 +40,54 @@ bool check(const vdbl& tocheck, const vdbl& correct) {
 	return works;
 }
 
+typedef long long ll;
+
+long long cat(ll a, ll b, int bits) {
+	return (a << bits) | b;
+}
+
 
 int main() {
 	srand(time(NULL));
 
-	int bits = 10;
-	vector<int> sizes({ bits, 20*bits, 2*bits });
+	int bits = 7;
+	vector<int> sizes({ 2*bits, 32*bits, bits*2 });
 	Network n(sizes, check);
 
-	vector<trdata> training(1<<bits), testing(100);
+	vector<trdata> training(1<<(2*bits) ), testing(100);
 
 	for (trdata& data : testing) {
 		long long i = rand() & ((1 << bits) - 1);
-		data.first = binary(i, bits);
+		long long j = rand() & ((1 << bits) - 1);
+		// if (i&1LL) i^=1LL; // if i is odd make it even. so test only even
+		
+		data.first = binary(cat(i, j, bits), 2*bits);
 		// data.second = mod10(i);
-		data.second = binary(i*i, 2*bits);
-	}/*
-	for (trdata& data : training) {
-		long long i = rand() & ((1 << bits) - 1);
-		data.first = binary(i, bits);
-		data.second = mod10(i);
-	}*/
-	for (int i = 0; i < 1 << bits; ++i) {
-		training[i].first = binary(i, bits);
-		// training[i].second = mod10(i);
-		training[i].second = binary(i*i, 2*bits);
+		data.second = binary(i*j, bits*2);
 	}
 
-	n.SGD(training, testing, 2000, 30, 1, 0.2, 0.0001);
+	// for (trdata& data : training) {
+	// 	long long i = rand() & ((1 << bits) - 1);
+	// 	long long j = rand() & ((1 << bits) - 1);
+
+	// 	data.first = binary(cat(i, j, bits), 2*bits);
+	// 	data.second = binary(i*j, bits*2);
+	// }
+
+	int idx = 0;
+	for (int i = 0; i < 1<<bits; ++i) {
+		for (int j = 0; j < 1<<bits; ++j) {
+			training[idx].first = binary(cat(i, j, bits), 2*bits);
+			training[idx].second = binary(i*j, 2*bits);
+			idx++;
+		}
+	}
+	// for (int i = 0; i < 1 << (2*bits); ++i) {
+	// 	training[i].first = binary(i, 2*bits);
+	// 	training[i].second = 
+	// }
+
+	n.SGD(training, testing, 300, 30, 1, 0.2, 0.0001);
 	ofstream fout("tests/test.txt");
 	fout << n;
 }
