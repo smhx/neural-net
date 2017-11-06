@@ -8,25 +8,23 @@
 #include <cmath>
 #include <string>
 #include <fstream>
+#include <functional>
+
+#include "types.h"
 
 class Network {
 
-  private:
-	typedef std::vector<double> vdbl;
-	typedef std::vector<vdbl> v2dbl;
-	typedef std::vector<v2dbl> v3dbl;
-	typedef std::pair<vdbl, vdbl> trdata; // training data
-	typedef std::vector<trdata> trbatch;
   public:
 
-	Network(const std::vector<int>& sizes);
+	Network(const std::vector<int>& sizes, const checker_type& f);
 
-	Network(std::string fname);
+	Network(std::string fname, const checker_type& f);
 
 	void SGD(trbatch& data, int numEpochs, int batchSize, double maxRate, double minRate, trbatch& test);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
 
-	void write(std::string fname);
+	// void write(std::string fname);
+	friend std::ofstream& operator<<(std::ofstream& f, const Network& n);
 
   private: // methods
 
@@ -44,6 +42,7 @@ class Network {
 	void testBatch(const trbatch& batch);
 
   private: // properties
+	checker_type checker;
 
 	// the number of layers in the network
 	int numLayers;

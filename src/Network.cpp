@@ -2,12 +2,10 @@
 
 using namespace std; // does not affect main.cpp
 
-typedef std::vector<double> vdbl;
-typedef std::pair<vdbl, vdbl> trdata;
-
 // initialize the network with random weights and biases
-Network::Network(const vector<int>& sizes) {
+Network::Network(const vector<int>& sizes, const checker_type& c) {
 
+	checker = c;
 	randGen = mt19937(randDev()); 
 
 	// defaults to mean of 0.0, standard dev of 1.0
@@ -42,7 +40,8 @@ Network::Network(const vector<int>& sizes) {
 	}
 }
 
-Network::Network(string fname) {
+Network::Network(string fname, const checker_type& c) {
+	checker = c;
 	cout << "input from fname = " << fname << "\n";
 	ifstream fin(fname);
 	if (!fin.good()) {
@@ -76,24 +75,25 @@ Network::Network(string fname) {
 	}
 }
 
-void Network::write(string fname) {
-	ofstream fout(fname);
-	fout << numLayers << "\n";
-	for (int sz : layerSizes) fout << sz << " ";
+
+ofstream& operator<<(ofstream& fout, const Network& n) {
+	fout << n.numLayers << "\n";
+	for (int sz : n.layerSizes) fout << sz << " ";
 	fout << "\n";
-	for (int i = 1; i < numLayers; ++i) {
-		for (int j = 0; j < layerSizes[i]; ++j) {
-			fout << biases[i][j] << " ";
+	for (int i = 1; i < n.numLayers; ++i) {
+		for (int j = 0; j < n.layerSizes[i]; ++j) {
+			fout << n.biases[i][j] << " ";
 		}
 		fout << "\n";
 	}
-	for (int i = 0; i + 1 < numLayers; ++i) {
-		for (int j = 0; j < layerSizes[i]; ++j) {
-			for (int k = 0; k < layerSizes[i+1]; ++k){
-				fout << weights[i][j][k] << " ";
+	for (int i = 0; i + 1 < n.numLayers; ++i) {
+		for (int j = 0; j < n.layerSizes[i]; ++j) {
+			for (int k = 0; k < n.layerSizes[i+1]; ++k){
+				fout << n.weights[i][j][k] << " ";
 			}
 		}
 	}
+	return fout;
 }
 
 void Network::feedForward(vdbl& a) {
@@ -253,21 +253,22 @@ void Network::testBatch(const trbatch& batch) {
 	for (trdata data : batch) {
 		vdbl in = data.first, out = data.second;
 		feedForward(in);
-		//check if correct
-		// double max = in[0]; int index = 0;
+		// //check if correct
+		// // double max = in[0]; int index = 0;
+		// // for (int i = 0; i < in.size(); ++i) {
+		// // 	if (in[i] > max) {
+		// // 		max = in[i];
+		// // 		index = i;
+		// // 	}
+		// // }
+		// // if (out[index] > 0.9)
+		// // 	++count;
+		// bool works = true;
 		// for (int i = 0; i < in.size(); ++i) {
-		// 	if (in[i] > max) {
-		// 		max = in[i];
-		// 		index = i;
-		// 	}
+		// 	if (abs(in[i]-out[i]) >= 0.5) works = false;
 		// }
-		// if (out[index] > 0.9)
-		// 	++count;
-		bool works = true;
-		for (int i = 0; i < in.size(); ++i) {
-			if (abs(in[i]-out[i]) >= 0.5) works = false;
-		}
-		if (works) ++count;
+		// if (works) ++count;
+		if (checker(in, out)) ++count;
 		//calculate cost
 		for (int i = 0; i < in.size(); ++i) {
 			// cost += 0.5*(in[i] - out[i])*(in[i] - out[i]) / (batch.size()); // for quadratic cost
