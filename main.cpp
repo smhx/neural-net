@@ -47,7 +47,7 @@ int main() {
 	int bits = 10;
 	vector<int> sizes({ 2*bits, 5*bits, bits+1 });
 //	Network n(sizes, check, 30, 1, 1, 0.2, 0);
-	Network n("tests/test.txt", check);
+	Network n("tests/x+y10b_20-40-11.txt", check);
 
 	vector<trdata> training(1<<(2*bits)), testing(10000);
 
@@ -65,8 +65,8 @@ int main() {
 		}
 	}
 
-	n.SGD(training, testing, 10);
-	ofstream fout("tests/test.txt");
+	n.SGD(training, testing, 5);
+	ofstream fout("tests/x+y10b_20-40-11.txt");
 	fout << n;
 }
 
