@@ -114,10 +114,11 @@ void Network::feedForward(vdbl& a) {
 	}
 }
 
-void Network::SGD(trbatch& data, int numEpochs, int batchSize, double maxRate, double minRate, trbatch& test) {
-
+void Network::SGD(trbatch& data, trbatch& test, int numEpochs, int batchSize, double maxRate, double minRate, double L2) {
 	learningRate = maxLearningRate = maxRate; // Initial learning rate
 	minLearningRate = minRate;
+	L2weight = L2;
+
 	for (int epoch = 1; epoch <= numEpochs; ++epoch) {
 		shuffle(data.begin(), data.end(), randGen);
 		vector< trbatch > batches;
@@ -173,17 +174,17 @@ void Network::updateBatch(const trbatch& batch) {
 			}
 		}
 	}
-
+	double n = static_cast<double>(batch.size());
 	for (int i = 0; i < biases.size(); ++i) {
 		for (int j = 0; j < biases[i].size(); ++j) {
-			biases[i][j] -= learningRate/static_cast<double>(batch.size()) * gradb[i][j];
+			biases[i][j] -= learningRate/n * gradb[i][j];
 		}
 	}
 
 	for (int i = 0; i < weights.size(); ++i) {
 		for (int j = 0; j < weights[i].size(); ++j) {
 			for (int k = 0; k < weights[i][j].size(); ++k) {
-				weights[i][j][k] -= learningRate/static_cast<double>(batch.size()) * gradw[i][j][k];
+				weights[i][j][k] = (1-learningRate*L2weight/n)*weights[i][j][k] - learningRate/n * gradw[i][j][k];
 			}
 		}
 	}
@@ -277,6 +278,13 @@ void Network::testBatch(const trbatch& batch) {
 			}
 
 			cost -= (out[i] * log(in[i]) + (1 - out[i])*log(1 - in[i])) / batch.size();
+		}
+		for (int i = 0; i < weights.size(); ++i) {
+			for (int j = 0; j < weights[i].size(); ++j)	{
+				for (int k = 0; k < weights[i][j].size(); ++k) {
+					cost += L2weight * 0.5 / batch.size() * weights[i][j][k] * weights[i][j][k];
+				}
+			}
 		}
 	}
 	double frac = (double)count / (double)batch.size();

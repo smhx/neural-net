@@ -23,7 +23,7 @@ class Network {
 
 	Network(std::string fname);
 
-	void SGD(trbatch& data, int numEpochs, int batchSize, double maxRate, double minRate, trbatch& test);
+	void SGD(trbatch& data, trbatch& test, int numEpochs, int batchSize, double maxRate, double minRate, double L2);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
 
 	void write(std::string fname);
@@ -50,6 +50,11 @@ class Network {
 
 	// how quickly it learns
 	double learningRate, minLearningRate, maxLearningRate;
+
+	// how much L2regularization affects cost
+	// if high, it will focus on keeping weights low
+	// if low, it will focus on minimizing regular cost function
+	double L2weight;
 
 	// to track progress
 	double maxfrac = 0;
