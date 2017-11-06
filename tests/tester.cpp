@@ -7,7 +7,7 @@ using namespace std;
 
 typedef vector<double> vdbl;
 
-const int bits = 8;
+const int bits = 10;
 
 int read(const vdbl& v) {
 	int toret = 0;
@@ -44,5 +44,15 @@ int main() {
 		n.feedForward(in);
 		int y = read(in);
 		cout << "got " << y << " expected " << x*x << "\n";
+	}
+
+	for (int z = 0; z < 1<<bits; ++z) {
+		int x = z*z;
+		vdbl in = binary(z);
+		n.feedForward(in);
+		int y = read(in);
+		if (y!=x) {
+			cout << z << " wrong. expected " << x << " got " << y << endl;
+		}
 	}
 }
