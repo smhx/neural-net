@@ -281,9 +281,16 @@ void Network::testBatch(const trbatch& batch) {
 	}
 	double frac = (double)count / (double)batch.size();
 	maxfrac = max(maxfrac, frac);
-	learningRate = frac*minLearningRate + (1-frac)*maxLearningRate;
+	learningRate = 0.3*learningRate + 0.7*(frac*minLearningRate + (1-frac)*maxLearningRate);
 
-	printf("%d/%lu correct, cost = %f, lrate = %lf, maxfrac = %f\n", count, batch.size(), cost, learningRate, maxfrac);
+	double maxWeight = 0;
+	// find max weight
+	for (int i = 0; i < numLayers - 1; ++i)
+		for (int j = 0; j < layerSizes[i]; ++j)
+			for (int k = 0; k < layerSizes[i + 1]; ++k)
+				maxWeight = max(maxWeight, abs(weights[i][j][k]));
+
+	printf("%d/%lu, cost=%.2lf, lrate=%.2lf, mf=%.2lf, mw=%.2f\n", count, batch.size(), cost, learningRate, maxfrac, maxWeight);
 }
 
 inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
