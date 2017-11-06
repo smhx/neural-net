@@ -30,7 +30,7 @@ vdbl mod10(long long i)
 int main() {
 	srand(time(NULL));
 	int bits = 10;
-	vector<int> sizes({ bits, bits*32, 2*bits });
+	vector<int> sizes({ bits, bits*10, 2*bits });
 	Network n(sizes);
 	vector<trdata> training(1<<bits), testing(100);
 

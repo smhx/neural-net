@@ -7,7 +7,7 @@ using namespace std;
 
 typedef vector<double> vdbl;
 
-const int bits = 10;
+const int bits = 12;
 
 int read(const vdbl& v) {
 	int toret = 0;
