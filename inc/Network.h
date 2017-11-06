@@ -20,6 +20,7 @@ class Network {
   public:
 
 	Network(const std::vector<int>& sizes);
+
 	Network(std::string fname);
 	void SGD(trbatch& data, int numEpochs, int batchSize, double trainingRate, trbatch& test);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
@@ -46,7 +47,11 @@ class Network {
 	// the number of layers in the network
 	int numLayers;
 
-	double learningRate, initLearningRate;
+	// how quickly it learns
+	double learningRate, minLearningRate, maxLearningRate;
+
+	// to track progress
+	double maxfrac = 0;
 
 	// the size of layer i with layer 0 = input layer
 	std::vector<int> layerSizes;
