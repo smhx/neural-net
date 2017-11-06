@@ -2,10 +2,15 @@
 
 using namespace std; // does not affect main.cpp
 
-// initialize the network with random weights and biases
-Network::Network(const vector<int>& sizes, const checker_type& c) {
+// Initialize the parameters and sets random weights and biases
+Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize, double _learnRate, double _maxLearn, double _minLearn, double _L2weight) {
 
 	checker = c;
+	batchSize = _batchSize;
+	learnRate = _learnRate;
+	maxLearn = _maxLearn;
+	minLearn = _minLearn;
+	L2weight = _L2weight;
 	randGen = mt19937(randDev()); 
 
 	// defaults to mean of 0.0, standard dev of 1.0
@@ -40,6 +45,7 @@ Network::Network(const vector<int>& sizes, const checker_type& c) {
 	}
 }
 
+// Initializes the parameters, weights, and biases from file
 Network::Network(string fname, const checker_type& c) {
 	checker = c;
 	cout << "input from fname = " << fname << "\n";
@@ -49,12 +55,19 @@ Network::Network(string fname, const checker_type& c) {
 		return;
 	}
 	fin >> numLayers;
-	cout << "numLayers = " << numLayers << "\n";
+	cout << "Number of Layers = " << numLayers << "\n";
 	layerSizes = vector<int>(numLayers);
 	for (int i = 0; i < numLayers; ++i) {
 		fin >> layerSizes[i];
 	}
-	printf("got layers\n");
+	printf("Layer Sizes:");
+	for (int i = 0; i < numLayers; ++i) {
+		printf(" %d%c", layerSizes[i], (i==numLayers-1 ? '\n' : ','));
+	}
+	fin >> batchSize >> learnRate >> maxLearn >> minLearn >> L2weight;
+	printf("Batch Size = %d\n", batchSize);
+	printf("Learning Rate: start = %lf, max = %lf, min = %lf\n", learnRate, maxLearn, minLearn);
+	printf("L2 Weight = %lf\n", L2weight);
 	biases = v2dbl(numLayers);
 	for (int i = 1; i < numLayers; ++i) {
 		biases[i] = vdbl(layerSizes[i]);
@@ -62,8 +75,8 @@ Network::Network(string fname, const checker_type& c) {
 			fin >> biases[i][j];
 		}
 	}
-	weights = v3dbl(numLayers-1);
-	printf("got biases\n");
+	printf("Got biases\n");
+	weights = v3dbl(numLayers - 1);
 	for (int i = 0; i + 1 < numLayers; ++i) {
 		weights[i] = v2dbl(layerSizes[i]);
 		for (int j = 0; j < layerSizes[i]; ++j) {
@@ -73,6 +86,7 @@ Network::Network(string fname, const checker_type& c) {
 			}
 		}
 	}
+	printf("Got weights\n");
 }
 
 
@@ -80,6 +94,7 @@ ofstream& operator<<(ofstream& fout, const Network& n) {
 	fout << n.numLayers << "\n";
 	for (int sz : n.layerSizes) fout << sz << " ";
 	fout << "\n";
+	fout << n.batchSize << " " << n.learnRate << " " << n.maxLearn << " " << n.minLearn << " " << n.L2weight << "\n";
 	for (int i = 1; i < n.numLayers; ++i) {
 		for (int j = 0; j < n.layerSizes[i]; ++j) {
 			fout << n.biases[i][j] << " ";
@@ -92,6 +107,7 @@ ofstream& operator<<(ofstream& fout, const Network& n) {
 				fout << n.weights[i][j][k] << " ";
 			}
 		}
+		fout << "\n";
 	}
 	return fout;
 }
@@ -114,11 +130,7 @@ void Network::feedForward(vdbl& a) {
 	}
 }
 
-void Network::SGD(trbatch& data, trbatch& test, int numEpochs, int batchSize, double maxRate, double minRate, double L2) {
-	learningRate = maxLearningRate = maxRate; // Initial learning rate
-	minLearningRate = minRate;
-	L2weight = L2;
-
+void Network::SGD(trbatch& data, trbatch& test, int numEpochs) {
 	for (int epoch = 1; epoch <= numEpochs; ++epoch) {
 		shuffle(data.begin(), data.end(), randGen);
 		vector< trbatch > batches;
@@ -177,14 +189,14 @@ void Network::updateBatch(const trbatch& batch) {
 	double n = static_cast<double>(batch.size());
 	for (int i = 0; i < biases.size(); ++i) {
 		for (int j = 0; j < biases[i].size(); ++j) {
-			biases[i][j] -= learningRate/n * gradb[i][j];
+			biases[i][j] -= learnRate/n * gradb[i][j];
 		}
 	}
 
 	for (int i = 0; i < weights.size(); ++i) {
 		for (int j = 0; j < weights[i].size(); ++j) {
 			for (int k = 0; k < weights[i][j].size(); ++k) {
-				weights[i][j][k] = (1-learningRate*L2weight/n)*weights[i][j][k] - learningRate/n * gradw[i][j][k];
+				weights[i][j][k] = (1-learnRate*L2weight/n)*weights[i][j][k] - learnRate/n * gradw[i][j][k];
 			}
 		}
 	}
@@ -276,7 +288,7 @@ void Network::testBatch(const trbatch& batch) {
 	}
 	double frac = (double)count / (double)batch.size();
 	maxfrac = max(maxfrac, frac);
-	learningRate = 0.3*learningRate + 0.7*(frac*minLearningRate + (1-frac)*maxLearningRate);
+	learnRate = 0.3*learnRate + 0.7*(frac*minLearn + (1-frac)*maxLearn);
 
 	double maxWeight = 0;
 	// find max weight
@@ -285,7 +297,7 @@ void Network::testBatch(const trbatch& batch) {
 			for (int k = 0; k < layerSizes[i + 1]; ++k)
 				maxWeight = max(maxWeight, abs(weights[i][j][k]));
 
-	printf("%d/%lu, cost=%.2lf, lrate=%.2lf, mf=%.2lf, mw=%.2f\n", count, batch.size(), cost, learningRate, maxfrac, maxWeight);
+	printf("%d/%lu, cost=%.2lf, lrate=%.2lf, mf=%.2lf, mw=%.2f\n", count, batch.size(), cost, learnRate, maxfrac, maxWeight);
 }
 
 inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }

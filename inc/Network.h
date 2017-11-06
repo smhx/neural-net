@@ -16,11 +16,11 @@ class Network {
 
   public:
 
-	Network(const std::vector<int>& sizes, const checker_type& f);
+	Network(const std::vector<int>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2);
 
 	Network(std::string fname, const checker_type& f);
 
-	void SGD(trbatch& data, trbatch& test, int numEpochs, int batchSize, double maxRate, double minRate, double L2);
+	void SGD(trbatch& data, trbatch& test, int numEpochs);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
 
 	// void write(std::string fname);
@@ -47,8 +47,10 @@ class Network {
 	// the number of layers in the network
 	int numLayers;
 
+	int batchSize;
+
 	// how quickly it learns
-	double learningRate, minLearningRate, maxLearningRate;
+	double learnRate, maxLearn, minLearn;
 
 	// how much L2regularization affects cost
 	// if high, it will focus on keeping weights low
