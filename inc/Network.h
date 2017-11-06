@@ -22,7 +22,8 @@ class Network {
 	Network(const std::vector<int>& sizes);
 
 	Network(std::string fname);
-	void SGD(trbatch& data, int numEpochs, int batchSize, double trainingRate, trbatch& test);
+
+	void SGD(trbatch& data, int numEpochs, int batchSize, double maxRate, double minRate, trbatch& test);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
 
 	void write(std::string fname);

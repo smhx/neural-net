@@ -51,12 +51,8 @@ int main() {
 		training[i].second = binary(i*i, 2*bits);
 	}
 
-<<<<<<< HEAD
-	n.SGD(training, 800, 20, 3, testing);
+	n.SGD(training, 800, 20, 3.0, 1.0, testing);
 	n.write("tests/test.txt");
-=======
-	n.SGD(training, 2000, 20, 1, 0.5, testing);
->>>>>>> 59121133420e7f17b9f0f7bf4e6de54a37aff6c6
 }
 
 /*
