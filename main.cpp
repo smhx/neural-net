@@ -45,8 +45,9 @@ int main() {
 	srand(time(NULL));
 
 	int bits = 10;
-	vector<int> sizes({ bits, 10*bits, 2*bits });
+	vector<int> sizes({ bits, 20*bits, 2*bits });
 	Network n(sizes, check);
+
 	vector<trdata> training(1<<bits), testing(100);
 
 	for (trdata& data : testing) {
@@ -66,10 +67,9 @@ int main() {
 		training[i].second = binary(i*i, 2*bits);
 	}
 
-	n.SGD(training, 2000, 10, 3, 1, testing);
+	n.SGD(training, testing, 2000, 30, 1, 0.2, 0.0001);
 	ofstream fout("tests/test.txt");
 	fout << n;
-	// n.write("tests/test.txt");
 }
 
 /*
