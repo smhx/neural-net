@@ -18,7 +18,9 @@ class Network {
 
 	Network(const std::vector<int>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2);
 
-	Network(std::string fname, const checker_type& f);
+	Network(std::ifstream& fin, const checker_type& f);
+
+	Network& operator=(const Network& net);
 
 	void SGD(trbatch& data, trbatch& test, int numEpochs);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer

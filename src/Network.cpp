@@ -46,12 +46,10 @@ Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize
 }
 
 // Initializes the parameters, weights, and biases from file
-Network::Network(string fname, const checker_type& c) {
+Network::Network(ifstream& fin, const checker_type& c) {
 	checker = c;
-	cout << "input from fname = " << fname << "\n";
-	ifstream fin(fname);
 	if (!fin.good()) {
-		printf("ERROR unknown file\n");
+		printf("Error in Network file construtor\n");
 		return;
 	}
 	fin >> numLayers;
@@ -87,6 +85,24 @@ Network::Network(string fname, const checker_type& c) {
 		}
 	}
 	printf("Got weights\n");
+}
+
+Network& Network::operator=(const Network& net) {
+	checker = net.checker;
+	batchSize = net.batchSize;
+	learnRate = net.learnRate;
+	maxLearn = net.maxLearn;
+	minLearn = net.minLearn;
+	L2weight = net.L2weight;
+	maxfrac = net.maxfrac;
+	layerSizes = net.layerSizes;
+	weights = net.weights;
+	biases = net.biases;
+
+	randGen = mt19937(randDev()); 
+
+	randDistribution = normal_distribution<double>(); 
+	return *this;
 }
 
 
