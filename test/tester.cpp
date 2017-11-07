@@ -1,4 +1,5 @@
 #include "tester.h"
+
 using namespace std;
 
 vdbl tobinary(ll x, int bits) {
@@ -11,6 +12,27 @@ ll round(const vdbl& v) {
 	ll x = 0;
 	for (int i = 0; i < v.size(); ++i) if (v[i] >= 0.5) x |= 1LL << i;
 	return x;
+}
+
+vdbl strdiv(const string& str, int namelen) {
+	vdbl x(namelen);
+	for (int i = 0; i < str.size(); ++i) {
+		char c = str[i];
+		c = tolower(c);
+		x[i] = static_cast<double>(c-'a') / 26.0;
+	}
+	for (int i = str.size(); i < namelen; ++i) {
+		x[i] = 1.0; // 1.0 for space
+	}
+	return x;
+}
+
+bool largestCheck(const vdbl& tocheck, const vdbl& correct) {
+	int maxarg = 0;
+	for (int i = 1; i < tocheck.size(); ++i) {
+		if (tocheck[i] > tocheck[maxarg]) maxarg = i;
+	}
+	return correct[maxarg] > 0.0;
 }
 
 bool roundCheck(const vdbl& tocheck, const vdbl& correct) {

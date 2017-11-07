@@ -7,6 +7,13 @@ main: build/main.o build/Network.o
 build/main.o: main.cpp inc/Network.h 
 	$(CXX) $(CXXFLAGS) -c -o build/main.o main.cpp 
 
+gender: build/gender.o build/tester.o build/Network.o
+	$(CXX) $(CXXFLAGS) -o bin/gender build/gender.o build/tester.o build/Network.o
+
+
+build/gender.o: test/gender/gender.cpp inc/Network.h test/tester.h
+	$(CXX) $(CXXFLAGS) -c -o build/gender.o test/gender/gender.cpp
+
 sum: build/sum.o build/tester.o build/Network.o
 	$(CXX) $(CXXFLAGS) -o bin/sum build/sum.o build/tester.o build/Network.o
 
