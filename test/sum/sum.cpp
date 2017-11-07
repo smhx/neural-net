@@ -63,6 +63,6 @@ void test() {
 }
 
 int main() {
-	train();
+	// train();
 	test();
 }
