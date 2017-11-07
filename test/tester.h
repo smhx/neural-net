@@ -37,7 +37,7 @@ struct Tester {
 
 	int batchSize, numEpochs;
 
-	double lrate, maxRate, minRate,  L2;
+	double lrate, maxRate, minRate, L2, momentum;
 
 	checker_type checker;
 

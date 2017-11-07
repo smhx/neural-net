@@ -1,6 +1,7 @@
 #include "../tester.h"
 #include <fstream>
 #include <algorithm>
+#include <ctime>
 using namespace std;
 
 const int namelen = 10;
@@ -96,8 +97,9 @@ void test() {
 		else printf("Girl\n");
 	}
 }
-
+/*
 int main() {
 	train();
 	test();
 }
+*/

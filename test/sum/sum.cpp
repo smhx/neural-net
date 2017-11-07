@@ -1,9 +1,10 @@
 #include "../tester.h"
+#include <ctime>
 
 using namespace std;
 
 const int bits = 8;
-
+/*
 void train() {
 	srand(time(NULL));
 	Tester tester;
@@ -66,3 +67,4 @@ int main() {
 	// train();
 	test();
 }
+*/

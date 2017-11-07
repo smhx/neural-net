@@ -3,7 +3,7 @@
 using namespace std; // does not affect main.cpp
 
 // Initialize the parameters and sets random weights and biases
-Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize, double _learnRate, double _maxLearn, double _minLearn, double _L2weight) {
+Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize, double _learnRate, double _maxLearn, double _minLearn, double _L2weight, double _momentum) {
 
 	checker = c;
 	batchSize = _batchSize;
@@ -11,6 +11,7 @@ Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize
 	maxLearn = _maxLearn;
 	minLearn = _minLearn;
 	L2weight = _L2weight;
+	momentum = _momentum;
 	randGen = mt19937(randDev()); 
 
 	// defaults to mean of 0.0, standard dev of 1.0
@@ -22,22 +23,23 @@ Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize
 
 	biases = v2dbl(sizes.size());
 	weights = v3dbl(sizes.size()-1);
+	weights = v3dbl(sizes.size() - 1);
 
 	for (int i = 0; i < numLayers; ++i) {
 		// don't set for input layer
 		if (i) { 
 			biases[i] = vdbl(sizes[i]);
-			for (int j = 0; j < biases[i].size(); ++j) {
+			for (int j = 0; j < sizes[i]; ++j) {
 				biases[i][j] = randDistribution(randGen); // is a random double
 			}
 		}
 		// don't set for output layer
 		if (i < numLayers - 1)
 		{
-			weights[i] = v2dbl(sizes[i]);
-			for (int j = 0; j < weights[i].size(); ++j)	{
-				weights[i][j] = vdbl(sizes[i + 1]);
-				for (int k = 0; k < weights[i][j].size(); ++k) {
+			weights[i] = velocity[i] = v2dbl(sizes[i]);
+			for (int j = 0; j < sizes[i]; ++j)	{
+				weights[i][j] = velocity[i][j] = vdbl(sizes[i + 1]);
+				for (int k = 0; k < sizes[i+1]; ++k) {
 					weights[i][j][k] = randDistribution(randGen);// / sqrt(sizes[i]);
 				}
 			}
@@ -62,10 +64,11 @@ Network::Network(ifstream& fin, const checker_type& c) {
 	for (int i = 0; i < numLayers; ++i) {
 		printf(" %d%c", layerSizes[i], (i==numLayers-1 ? '\n' : ','));
 	}
-	fin >> batchSize >> learnRate >> maxLearn >> minLearn >> L2weight;
+	fin >> batchSize >> learnRate >> maxLearn >> minLearn >> L2weight >> momentum;
 	printf("Batch Size = %d\n", batchSize);
 	printf("Learning Rate: start = %lf, max = %lf, min = %lf\n", learnRate, maxLearn, minLearn);
 	printf("L2 Weight = %lf\n", L2weight);
+	printf("Momentum Coefficient = %lf\n", momentum);
 	biases = v2dbl(numLayers);
 	for (int i = 1; i < numLayers; ++i) {
 		biases[i] = vdbl(layerSizes[i]);
@@ -94,7 +97,7 @@ Network& Network::operator=(const Network& net) {
 	maxLearn = net.maxLearn;
 	minLearn = net.minLearn;
 	L2weight = net.L2weight;
-	maxfrac = net.maxfrac;
+	momentum = net.momentum;
 	layerSizes = net.layerSizes;
 	weights = net.weights;
 	biases = net.biases;
@@ -110,7 +113,7 @@ ofstream& operator<<(ofstream& fout, const Network& n) {
 	fout << n.numLayers << "\n";
 	for (int sz : n.layerSizes) fout << sz << " ";
 	fout << "\n";
-	fout << n.batchSize << " " << n.learnRate << " " << n.maxLearn << " " << n.minLearn << " " << n.L2weight << "\n";
+	fout << n.batchSize << " " << n.learnRate << " " << n.maxLearn << " " << n.minLearn << " " << n.L2weight << " " << n.momentum << "\n";
 	for (int i = 1; i < n.numLayers; ++i) {
 		for (int j = 0; j < n.layerSizes[i]; ++j) {
 			fout << n.biases[i][j] << " ";
