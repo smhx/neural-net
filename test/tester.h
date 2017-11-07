@@ -11,7 +11,6 @@ bool roundCheck(const vdbl& tocheck, const vdbl& correct);
 
 ll cat(const ll a, const ll b, int bits);
 
-
 struct Tester {
 
 	void train();

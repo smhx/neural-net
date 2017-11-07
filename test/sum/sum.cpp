@@ -3,9 +3,9 @@
 
 using namespace std;
 
-const int bits = 5;
+const int bits = 8;
 
-int main() {
+void train() {
 	srand(time(NULL));
 	Tester tester;
 
@@ -25,7 +25,7 @@ int main() {
 	}
 
 	printf("Finished initializing\n");
-	
+
 	tester.numEpochs = 10;
 	tester.batchSize = 20;
 
@@ -43,4 +43,27 @@ int main() {
 
 	tester.train();
 
+}
+
+void test() {
+	ifstream fin("test/sum/sum.txt");
+
+	Network n(fin, roundCheck);
+
+	while (1) {
+		ll x, y;
+		cin >> x >> y;
+		vdbl in = tobinary(cat(x, y, bits), bits*2);
+
+		n.feedForward(in);
+
+		int got = round(in);
+
+		cout << "got " << got << " expected " << x+y << "\n";
+	}
+}
+
+int main() {
+	train();
+	test();
 }
