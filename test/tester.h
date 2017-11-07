@@ -10,6 +10,7 @@ vdbl tobinary(ll x, int bits);
 // x[i] = (tolower(str[i])-'a')/26.0 if str[i] is an alpha
 // if i >= str.size() it's just set to 1.0
 vdbl strdiv(const std::string& str, int namelen);
+vdbl rstrdiv(const std::string& str, int namelen);
 
 ll round(const vdbl& v);
 

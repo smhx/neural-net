@@ -15,14 +15,29 @@ ll round(const vdbl& v) {
 }
 
 vdbl strdiv(const string& str, int namelen) {
+
 	vdbl x(namelen);
 	for (int i = 0; i < str.size(); ++i) {
 		char c = str[i];
 		c = tolower(c);
-		x[i] = static_cast<double>(c-'a') / 26.0;
+		x[i] = static_cast<double>(c-'a' + 1) / 26.0;
 	}
 	for (int i = str.size(); i < namelen; ++i) {
-		x[i] = 1.0; // 1.0 for space
+		x[i] = 0.0; // 0.0 for space
+	}
+	cout << "name = " << str << " and x = ";
+	for (auto d : x) cout << d << " ";
+	cout << "\n";
+	return x;
+}
+
+vdbl rstrdiv(const string& str, int namelen) {
+	vdbl x(namelen);
+	for (int i = 0; i < namelen-str.size(); ++i) x[i] = 0.0;
+	for (int i = 0; i < str.size(); ++i) {
+		char c = str[i];
+		c = tolower(c);
+		x[namelen-str.size()+i] = static_cast<double>(c-'a' + 1) / 26.0;
 	}
 	return x;
 }
