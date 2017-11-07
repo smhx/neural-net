@@ -16,7 +16,7 @@ class Network {
 
   public:
 
-	Network(const std::vector<int>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2);
+	Network(const std::vector<int>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2, double momentum);
 
 	Network(std::ifstream& fin, const checker_type& f);
 
@@ -59,6 +59,8 @@ class Network {
 	// if low, it will focus on minimizing regular cost function
 	double L2weight;
 
+	double momentum;
+
 	// to track progress
 	double maxfrac = 0;
 
@@ -76,6 +78,10 @@ class Network {
 	// has size of numLayers
 	// bias[i][k] is the bias of the jth node in layer i
 	v2dbl biases;
+
+	// the velocity (rate of change) of each weight
+	// same size as weights
+	v3dbl velocity;
 
 	// Random stuff 
 

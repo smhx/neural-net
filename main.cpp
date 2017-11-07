@@ -6,6 +6,10 @@
 #include "inc/Network.h"
 #include "inc/types.h"
 
+#include <Eigen/Dense>
+
+using Eigen::MatrixXd;
+
 using namespace std;
 
 typedef std::vector<double> vdbl;
@@ -40,26 +44,33 @@ bool check(const vdbl& tocheck, const vdbl& correct) {
 	return works;
 }
 
-
 int main() {
+	MatrixXd m(2, 2);
+	m(0, 0) = 3;
+	m(1, 0) = 2.5;
+	m(0, 1) = -1;
+	m(1, 1) = m(1, 0) + m(0, 1);
+	std::cout << m << std::endl;
+	/*
 	srand(time(NULL));
+	ifstream fin("tests/test.txt");
 
-	int bits = 10;
-	vector<int> sizes({ 2*bits, 15*bits, 2*bits });
-//	Network n(sizes, check, 10, 1, 1, 0.2, 0);
-	Network n("tests/test.txt", check);
+	int bits = 15;
+	vector<int> sizes({ bits, 10*bits, 5*bits, 2*bits });
+//	Network n(sizes, check, 10, 0.3, 0.3, 0.1, 0, 0.5);
+	Network n(fin, check);
 
-	vector<trdata> training(100000), testing(100);
+	vector<trdata> training(20000), testing(1000);
 	
 	for (trdata& data : testing) {
 		long long i = rand() & ((1 << bits) - 1);
 //		long long j = rand() & ((1 << bits) - 1);
-		data.first = binary((i << bits) | i, 2 * bits);
+		data.first = binary(i, bits);
 		data.second = binary(i*i, bits*2);
 	}
 	for (trdata& data : training) {
 		long long i = rand() & ((1 << bits) - 1);
-		data.first = binary((i << bits) | i, 2 * bits);
+		data.first = binary(i, bits);
 		data.second = binary(i*i, bits*2);
 	}
 	/*
@@ -69,11 +80,11 @@ int main() {
 			training[ind].first = binary((i << bits) | j, 2 * bits);
 			training[ind++].second = binary(i + j, bits + 1);
 		}
-	}*/
+	}
 
-	n.SGD(training, testing, 10);
+	n.SGD(training, testing, 40);
 	ofstream fout("tests/test.txt");
-	fout << n;
+	fout << n;*/
 }
 
 /*

@@ -49,7 +49,7 @@ bool roundCheck(const vdbl& tocheck, const vdbl& correct) {
 ll cat(const ll a, const ll b, int bits) {return (a << bits) | b;}
 
 void Tester::train() {
-	Network n(sizes, checker, batchSize, lrate, maxRate, minRate, L2);
+	Network n(sizes, checker, batchSize, lrate, maxRate, minRate, L2, momentum);
 	n.SGD(training, testing, numEpochs);
 	if ( write ) {
 		if (!fout.good() ) cout << "error fout is bad\n";

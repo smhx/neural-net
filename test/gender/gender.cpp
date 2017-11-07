@@ -1,6 +1,7 @@
 #include "../tester.h"
 #include <fstream>
 #include <algorithm>
+#include <ctime>
 using namespace std;
 
 const int namelen = 10;
@@ -83,8 +84,9 @@ void test() {
 		cout << "got (" << in[0] << ", " << in[1] << ".\n";
 	}
 }
-
+/*
 int main() {
 	train();
 	test();
 }
+*/
