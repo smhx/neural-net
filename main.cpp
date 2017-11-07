@@ -45,13 +45,14 @@ bool check(const vdbl& tocheck, const vdbl& correct) {
 }
 
 int main() {
+	
 	MatrixXd m(2, 2);
 	m(0, 0) = 3;
 	m(1, 0) = 2.5;
 	m(0, 1) = -1;
 	m(1, 1) = m(1, 0) + m(0, 1);
 	std::cout << m << std::endl;
-	/*
+	
 	srand(time(NULL));
 	ifstream fin("tests/test.txt");
 
@@ -80,11 +81,11 @@ int main() {
 			training[ind].first = binary((i << bits) | j, 2 * bits);
 			training[ind++].second = binary(i + j, bits + 1);
 		}
-	}
+	}*/
 
-	n.SGD(training, testing, 40);
+	n.SGD(training, testing, 10);
 	ofstream fout("tests/test.txt");
-	fout << n;*/
+	fout << n;
 }
 
 /*

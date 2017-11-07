@@ -5,7 +5,7 @@ using namespace std;
 const int ndigits=10;
 
 int imgsize, ntraining, ntest;
-
+/*
 void read(Tester& tester) {
 	
 	ifstream fin("test/digit/imgdata.txt");
@@ -58,4 +58,4 @@ void train(){
 
 int main() {
 	train();
-}
+}*/
