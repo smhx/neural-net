@@ -15,8 +15,8 @@ const int tstsize = 50;
 void train() {
 	srand(time(NULL));
 	Tester tester;
-
-	tester.sizes = {namelen, 10*namelen, 2}; // output is (0.0, 1.0) for female (1.0, 0.0) for male
+	// 20
+	tester.sizes = {namelen, 70, 2}; // output is (0.0, 1.0) for female (1.0, 0.0) for male
 
 	ifstream guys("test/gender/males.txt"), girls("test/gender/females.txt");
 
@@ -57,17 +57,19 @@ void train() {
 	tester.numEpochs = 200;
 	tester.batchSize = 20;
 
-	tester.lrate = 0.01;
-	tester.maxRate = 0.01;
-	tester.minRate = 0.005;
+	tester.lrate = 0.1;
+	tester.maxRate = 0.2;
+	tester.minRate = 0.01;
 	
 	tester.checker = largestCheck;
 
 	tester.write = true;
 
+	tester.L2 = 0.01; // 0.001
+
 	printf("Training\n");
 
-	tester.fout = ofstream("test/gender/net3.txt");
+	tester.fout = ofstream("test/gender/net4.txt");
 
 	tester.train();
 
@@ -77,7 +79,7 @@ void test() {
 
 	printf("Testing\n");
 
-	ifstream fin("test/gender/net3.txt");
+	ifstream fin("test/gender/net4.txt");
 
 	Network n(fin, largestCheck);
 
@@ -96,6 +98,6 @@ void test() {
 }
 
 int main() {
-	// train();
+	train();
 	test();
 }

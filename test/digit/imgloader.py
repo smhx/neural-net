@@ -43,5 +43,8 @@ def load_data():
 
 def write(data, fname):
     f = open(fname, "w")
+    f.write("784 50000 10000\n")
     for (train, _v, _t) in data:
-        for
+        for value in train:
+            
+
