@@ -45,28 +45,34 @@ int main() {
 	srand(time(NULL));
 
 	int bits = 10;
-	vector<int> sizes({ 2*bits, 5*bits, bits+1 });
-//	Network n(sizes, check, 30, 1, 1, 0.2, 0);
-	Network n("tests/x+y10b_20-40-11.txt", check);
+	vector<int> sizes({ 2*bits, 15*bits, 2*bits });
+//	Network n(sizes, check, 10, 1, 1, 0.2, 0);
+	Network n("tests/test.txt", check);
 
-	vector<trdata> training(1<<(2*bits)), testing(10000);
-
+	vector<trdata> training(100000), testing(100);
+	
 	for (trdata& data : testing) {
 		long long i = rand() & ((1 << bits) - 1);
-		long long j = rand() & ((1 << bits) - 1);
-		data.first = binary((i << bits) | j, 2 * bits);
-		data.second = binary(i + j, bits + 1);
+//		long long j = rand() & ((1 << bits) - 1);
+		data.first = binary((i << bits) | i, 2 * bits);
+		data.second = binary(i*i, bits*2);
 	}
+	for (trdata& data : training) {
+		long long i = rand() & ((1 << bits) - 1);
+		data.first = binary((i << bits) | i, 2 * bits);
+		data.second = binary(i*i, bits*2);
+	}
+	/*
 	int ind = 0;
 	for (int i = 0; i < 1 << bits; ++i) {
 		for (int j = 0; j < 1 << bits; ++j)	{
 			training[ind].first = binary((i << bits) | j, 2 * bits);
 			training[ind++].second = binary(i + j, bits + 1);
 		}
-	}
+	}*/
 
-	n.SGD(training, testing, 5);
-	ofstream fout("tests/x+y10b_20-40-11.txt");
+	n.SGD(training, testing, 10);
+	ofstream fout("tests/test.txt");
 	fout << n;
 }
 
