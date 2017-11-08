@@ -3,8 +3,10 @@
     "",
     "\\inc",
     "\\src",
-    "\\tests"
+    "\\test",
+    "\\tests",
+    "\\test\\digit"
   ],
-  "SelectedNode": "\\tests\\test.txt",
+  "SelectedNode": "\\test\\digit\\digit.cpp",
   "PreviewInSolutionExplorer": false
 }

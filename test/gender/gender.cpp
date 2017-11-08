@@ -12,7 +12,7 @@ const int tstsize = 50;
 
 // There are 2943 males
 // There are 5004 females
-
+/*
 void train() {
 	srand(time(NULL));
 	Tester tester;
@@ -75,7 +75,7 @@ void train() {
 	tester.train();
 
 }
-
+*/
 void test() {
 
 	printf("Testing\n");

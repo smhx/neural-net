@@ -43,7 +43,7 @@ bool check(const vdbl& tocheck, const vdbl& correct) {
 	}
 	return works;
 }
-
+/*
 int main() {
 	
 	MatrixXd m(2, 2);
@@ -82,8 +82,9 @@ int main() {
 			training[ind++].second = binary(i + j, bits + 1);
 		}
 	}*/
+	/*
 
-	n.SGD(training, testing, 10);
+	n.SGD(training, testing, 10, "tests/test3.txt");/*
 	ofstream fout("tests/test2.txt");
 	fout << n;
-}
+}*/

@@ -39,7 +39,7 @@ Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize
 			for (int j = 0; j < sizes[i]; ++j)	{
 				weights[i][j] = velocity[i][j] = vdbl(sizes[i + 1]);
 				for (int k = 0; k < sizes[i+1]; ++k) {
-					weights[i][j][k] = randDistribution(randGen);// / sqrt(sizes[i]);
+					weights[i][j][k] = randDistribution(randGen) / sqrt(sizes[i]);
 				}
 			}
 		}
@@ -168,7 +168,7 @@ void Network::feedForward(vdbl& a) {
 	}
 }
 
-void Network::SGD(trbatch& data, trbatch& test, int numEpochs) {
+void Network::SGD(trbatch& data, trbatch& test, int numEpochs, string fname) {
 	for (int epoch = 1; epoch <= numEpochs; ++epoch) {
 		shuffle(data.begin(), data.end(), randGen);
 		vector< trbatch > batches;
@@ -181,6 +181,8 @@ void Network::SGD(trbatch& data, trbatch& test, int numEpochs) {
 		}
 		printf("Epoch %d: ", epoch);
 		testBatch(test);
+		ofstream fout(fname);
+		fout << *this;
 	}
 }
 

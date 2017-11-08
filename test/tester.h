@@ -33,6 +33,8 @@ struct Tester {
 
 	std::ofstream fout;
 
+	std::string fname;
+
 	trbatch training, testing;
 
 	int batchSize, numEpochs;

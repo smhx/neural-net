@@ -22,7 +22,7 @@ class Network {
 
 	Network& operator=(const Network& net);
 
-	void SGD(trbatch& data, trbatch& test, int numEpochs);
+	void SGD(trbatch& data, trbatch& test, int numEpochs, std::string fname);
 	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
 
 	// void write(std::string fname);
