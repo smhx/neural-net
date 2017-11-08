@@ -54,10 +54,10 @@ int main() {
 	std::cout << m << std::endl;
 	
 	srand(time(NULL));
-	ifstream fin("tests/test.txt");
+	ifstream fin("tests/test2.txt");
 
 	int bits = 15;
-	vector<int> sizes({ bits, 10*bits, 5*bits, 2*bits });
+	vector<int> sizes({ bits, 30*bits, 2*bits });
 //	Network n(sizes, check, 10, 0.3, 0.3, 0.1, 0, 0.5);
 	Network n(fin, check);
 
@@ -84,27 +84,6 @@ int main() {
 	}*/
 
 	n.SGD(training, testing, 10);
-	ofstream fout("tests/test.txt");
+	ofstream fout("tests/test2.txt");
 	fout << n;
 }
-
-/*
-To make testing and training data mutually exclusive
-
-vector<int> inTesting;
-for (trdata& data : testing) {
-int num = rand() & ((1 << bits) - 1);
-data.first = binary(num, bits);
-data.second = binary(num*num, 2 * bits);
-inTesting.push_back(num);
-}
-sort(inTesting.begin(), inTesting.end());
-int num = 0;
-for (trdata& data : training) {
-while (std::binary_search(inTesting.begin(), inTesting.end(), num))
-num = (num + 1)&((1 << bits) - 1);
-data.first = binary(num, bits);
-data.second = binary(num*num, 2*bits);
-num = (num + 1)&((1 << bits) - 1);
-}
-*/

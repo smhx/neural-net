@@ -22,8 +22,7 @@ Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize
 	layerSizes = sizes;
 
 	biases = v2dbl(sizes.size());
-	weights = v3dbl(sizes.size()-1);
-	weights = v3dbl(sizes.size() - 1);
+	weights = velocity = v3dbl(sizes.size() - 1);
 
 	for (int i = 0; i < numLayers; ++i) {
 		// don't set for input layer
@@ -88,6 +87,17 @@ Network::Network(ifstream& fin, const checker_type& c) {
 		}
 	}
 	printf("Got weights\n");
+	velocity = v3dbl(numLayers - 1);
+	for (int i = 0; i + 1 < numLayers; ++i)	{
+		velocity[i] = v2dbl(layerSizes[i]);
+		for (int j = 0; j < layerSizes[i]; ++j)	{
+			velocity[i][j] = vdbl(layerSizes[i + 1]);
+			for (int k = 0; k < layerSizes[i + 1]; ++k)	{
+				fin >> velocity[i][j][k];
+			}
+		}
+	}
+	printf("Got velocities\n");
 }
 
 Network& Network::operator=(const Network& net) {
@@ -101,6 +111,7 @@ Network& Network::operator=(const Network& net) {
 	layerSizes = net.layerSizes;
 	weights = net.weights;
 	biases = net.biases;
+	velocity = net.velocity;
 
 	randGen = mt19937(randDev()); 
 
@@ -124,6 +135,14 @@ ofstream& operator<<(ofstream& fout, const Network& n) {
 		for (int j = 0; j < n.layerSizes[i]; ++j) {
 			for (int k = 0; k < n.layerSizes[i+1]; ++k){
 				fout << n.weights[i][j][k] << " ";
+			}
+		}
+		fout << "\n";
+	}
+	for (int i = 0; i + 1 < n.numLayers; ++i) {
+		for (int j = 0; j < n.layerSizes[i]; ++j) {
+			for (int k = 0; k < n.layerSizes[i+1]; ++k){
+				fout << n.velocity[i][j][k] << " ";
 			}
 		}
 		fout << "\n";
@@ -212,10 +231,11 @@ void Network::updateBatch(const trbatch& batch) {
 		}
 	}
 
-	for (int i = 0; i < weights.size(); ++i) {
-		for (int j = 0; j < weights[i].size(); ++j) {
-			for (int k = 0; k < weights[i][j].size(); ++k) {
-				weights[i][j][k] = (1-learnRate*L2weight/n)*weights[i][j][k] - learnRate/n * gradw[i][j][k];
+	for (int i = 0; i < numLayers-1; ++i) {
+		for (int j = 0; j < layerSizes[i]; ++j) {
+			for (int k = 0; k < layerSizes[i+1]; ++k) {
+				velocity[i][j][k] = momentum*velocity[i][j][k] - learnRate / n * gradw[i][j][k];
+				weights[i][j][k] = (1 - learnRate*L2weight / n)*weights[i][j][k] + velocity[i][j][k];
 			}
 		}
 	}
