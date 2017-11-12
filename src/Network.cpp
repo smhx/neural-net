@@ -338,7 +338,7 @@ void Network::testBatch(const trbatch& batch) {
 			for (int k = 0; k < layerSizes[i + 1]; ++k)
 				maxWeight = max(maxWeight, abs(weights[i][j][k]));
 
-	printf("%d/%lu, cost=%.3lf, lrate=%.3lf, mf=%.2lf, mw=%.1f\n", count, batch.size(), cost, learnRate, maxfrac, maxWeight);
+	printf("%d/%lu, cost=%.3lf, lrate=%lf, mf=%.2lf, mw=%.1f\n", count, batch.size(), cost, learnRate, maxfrac, maxWeight);
 }
 
 inline double Network::sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }

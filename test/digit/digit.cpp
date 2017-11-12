@@ -83,22 +83,22 @@ void train(){
 	read(tester);
 	cout << "Finished reading\n";
 	
-	tester.sizes = {imgsize*imgsize, 30, ndigits};
+	tester.sizes = {imgsize*imgsize, 50, ndigits};
 
-	tester.batchSize = 10;
-	tester.lrate = 0.01;
-	tester.maxRate = 0.01;
-	tester.minRate = 0.001;
+	tester.batchSize = 1;
+	tester.lrate = 0.0001;
+	tester.maxRate = 0.0001;
+	tester.minRate = 0.00001;
 
 	tester.L2 = 0;
-	tester.momentum = 0.1;
+	tester.momentum = 0.2;
 	
 	tester.checker = largestCheck;
 
 	tester.write = true;
-	tester.fname = "test/digit/digit2.txt";
+	tester.fname = "test/digit/digit4.txt";
 	
-	tester.numEpochs = 50;
+	tester.numEpochs = 100;
 	tester.train();
 }
 
