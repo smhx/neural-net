@@ -1,5 +1,5 @@
-#ifndef LAYER_H
-#define LAYER_H
+#ifndef NETWORK_H
+#define NETWORK_H
 
 #include <vector>
 #include <random>

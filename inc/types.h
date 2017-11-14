@@ -16,6 +16,7 @@ typedef Eigen::MatrixXd v2dbl;
 typedef std::vector<Eigen::MatrixXd> v3dbl;
 */
 typedef Eigen::MatrixXd Mat;
+typedef Eigen::VectorXd Vec;
 typedef std::pair<vdbl, vdbl> trdata; // training data
 typedef std::vector<trdata> trbatch;
 

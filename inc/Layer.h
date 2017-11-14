@@ -17,10 +17,11 @@ class Layer
 
 public:
 
-	Layer(int inSize, int outSize, int miniBatchSize);
+	Layer(int _in, int _out, int _miniBatchSize);
 
-	//converts the output of the previous layer to the output of this layer
-	void apply(Mat& in);
+	// converts the output of the previous layer to the output of this layer
+	// input is an in x miniBatchSize matrix, each column is a data set
+	void apply(Mat& input);
 
 private: // methods
 
@@ -28,13 +29,17 @@ private: // methods
 
 private: // properties
 
+	// sizes of the layer's input and output
+	int in, out;
+
 	int miniBatchSize;
 
-	// an outSize x inSize matrix of weights
-	v3dbl weights;
+	// an out x in matrix of weights
+	// weights[i][j] is the weight of node j in the previous layer to node i in the current layer
+	Mat weights;
 
-	// an outSize x 1 vector of biases
-	v2dbl biases;
+	// an out x 1 vector of biases
+	Vec biases;
 
 	// Random stuff 
 
