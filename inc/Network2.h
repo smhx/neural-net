@@ -12,24 +12,20 @@
 
 #include "types.h"
 
-class Network
+#include "../inc/Layer.h"
+
+class Network2
 {
 
 public:
 
-	Network(const std::vector<int>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2, double momentum);
+	Network2(const std::vector<Layer>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2, double momentum);
 
-	void SGD(trbatch& data, trbatch& test, int numEpochs, std::string fname);
-	void feedForward(vdbl& inputLayer); // pass by reference. input layer will output as output layer
+	void SGD(trbatch& data, trbatch& test, int numEpochs);
+
+	void feedForward(Mat& input); // pass by reference. input layer will output as output layer
 
 private: // methods
-
-	double sigmoid(double x);
-	double sigmoidPrime(double x);
-	vdbl sigmoid(const vdbl& x);
-	vdbl sigmoidPrime(const vdbl& x);
-	vdbl multiply(const vdbl& x, const vdbl& y);
-	vdbl costDerivative(const vdbl& activation, const vdbl& ans);
 
 	void updateBatch(const trbatch& batch);
 
@@ -40,13 +36,14 @@ private: // methods
 private: // properties
 	checker_type checker;
 
-	// the number of layers in the network
+	// the layers in the network
+	vector<Layer> layers; //should this be a vector of pointers to layers?
 	int numLayers;
 
-	int batchSize;
+	int miniBatchSize;
 
 	// how quickly it learns
-	double learnRate, maxLearn, minLearn;
+	double learnRate, maxRate, minRate;
 
 	// how much L2regularization affects cost
 	// if high, it will focus on keeping weights low
@@ -57,6 +54,12 @@ private: // properties
 
 	// to track progress
 	double maxfrac = 0;
+
+	// random device class instance, source of 'true' randomness for initializing random seed
+	std::random_device randDev;
+
+	// Mersenne twister PRNG, initialized with seed from previous random device instance
+	std::mt19937 randGen;
 };
 
 #endif

@@ -17,8 +17,11 @@ typedef std::vector<Eigen::MatrixXd> v3dbl;
 */
 typedef Eigen::MatrixXd Mat;
 typedef Eigen::VectorXd Vec;
-typedef std::pair<vdbl, vdbl> trdata; // training data
+
+//typedef std::pair<vdbl, vdbl> trdata; // training data
+typedef std::pair<Vec, Vec> trdata;
 typedef std::vector<trdata> trbatch;
+
 
 typedef std::function<bool (const vdbl&, const vdbl&) > checker_type;
 #endif

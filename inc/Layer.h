@@ -23,9 +23,23 @@ public:
 	// input is an in x miniBatchSize matrix, each column is a data set
 	void apply(Mat& input);
 
+	// if this layer is the last layer, computes the delta (error) given the output and correct answer
+	void computeDeltaLast(Mat& output, Mat& ans, Mat& WTD);
+
+	// if this layer is not the last layer, computes the delta from the last layer's delta
+	void computeDeltaBack(Mat& WTD);
+
+	void Layer::updateBiasAndWeights(Mat& backActivations, double lrate);
+
+	pair<int, int> getSize();
+
 private: // methods
 
-	double sigmoid(double x);
+	double activation(double x);
+
+	double activationDeriv(double x);
+
+	Mat costDeriv(Mat& ans, Mat& output);
 
 private: // properties
 
@@ -40,6 +54,20 @@ private: // properties
 
 	// an out x 1 vector of biases
 	Vec biases;
+
+	// the values before the activation function is applied to them
+	// these are the z values in the tutorial
+	Mat preactivations;
+
+	// stores the activations to use in backpropagation
+	Mat activations;
+
+	// sigma'(z) for each preactivation z
+	Mat derivs;
+
+	// the error from the actual answer, used for backpropagation
+	// it's an o
+	Mat delta;
 
 	// Random stuff 
 
