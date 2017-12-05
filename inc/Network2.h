@@ -19,9 +19,11 @@ class Network2
 
 public:
 
-	Network2(const std::vector<Layer>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2, double momentum);
+//	Network2(const std::vector<Layer>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2, double momentum);
 
-	void SGD(trbatch& data, trbatch& test, int numEpochs);
+	Network2::Network2(const std::vector<Layer>& _layers, int mbs, double lr);
+	
+	void train(trbatch& data, trbatch& test, int numEpochs);
 
 	void feedForward(Mat& input); // pass by reference. input layer will output as output layer
 
@@ -37,7 +39,7 @@ private: // properties
 	checker_type checker;
 
 	// the layers in the network
-	vector<Layer> layers; //should this be a vector of pointers to layers?
+	std::vector<Layer> layers; //should this be a vector of pointers to layers?
 	int numLayers;
 
 	int miniBatchSize;

@@ -3,21 +3,17 @@
 #include <ctime>
 #include <cstdlib>
 
-#include "inc/Network.h"
+#include "inc/Network2.h"
+#include "inc/Layer.h"
 #include "inc/types.h"
 
 #include <Eigen/Dense>
 
-using Eigen::MatrixXd;
-
 using namespace std;
 
-typedef std::vector<double> vdbl;
-typedef std::pair<vdbl, vdbl> trdata;
-
-vdbl binary(long long i, int bits)
+Vec binary(long long i, int bits)
 {
-	vdbl v(bits, 0.0);
+	Vec v(bits, 0.0);
 	for (int j = 0; j < bits; ++j) {
 		if (i&(1LL << j))
 			v[j] = 1.0;
@@ -43,29 +39,24 @@ bool check(const vdbl& tocheck, const vdbl& correct) {
 	}
 	return works;
 }
-/*
+
 int main() {
-	
-	MatrixXd m(2, 2);
-	m(0, 0) = 3;
-	m(1, 0) = 2.5;
-	m(0, 1) = -1;
-	m(1, 1) = m(1, 0) + m(0, 1);
-	std::cout << m << std::endl;
-	
 	srand(time(NULL));
-	ifstream fin("tests/test2.txt");
+//	ifstream fin("tests/test2.txt");
 
 	int bits = 15;
-	vector<int> sizes({ bits, 30*bits, 2*bits });
-//	Network n(sizes, check, 10, 0.3, 0.3, 0.1, 0, 0.5);
-	Network n(fin, check);
+	int mbs = 8; //mini batch size
+	Layer l1(6, 12, mbs);
+	Layer l2(12, 12, mbs);
+	vector<Layer> layers;
+	layers.push_back(l1);
+	layers.push_back(l2);
+	Network2 n(layers, mbs, 0.1);
 
 	vector<trdata> training(20000), testing(1000);
 	
 	for (trdata& data : testing) {
 		long long i = rand() & ((1 << bits) - 1);
-//		long long j = rand() & ((1 << bits) - 1);
 		data.first = binary(i, bits);
 		data.second = binary(i*i, bits*2);
 	}
@@ -74,17 +65,6 @@ int main() {
 		data.first = binary(i, bits);
 		data.second = binary(i*i, bits*2);
 	}
-	/*
-	int ind = 0;
-	for (int i = 0; i < 1 << bits; ++i) {
-		for (int j = 0; j < 1 << bits; ++j)	{
-			training[ind].first = binary((i << bits) | j, 2 * bits);
-			training[ind++].second = binary(i + j, bits + 1);
-		}
-	}*/
-	/*
 
-	n.SGD(training, testing, 10, "tests/test3.txt");/*
-	ofstream fout("tests/test2.txt");
-	fout << n;
-}*/
+	n.train(training, testing, 10);
+}

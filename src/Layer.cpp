@@ -26,12 +26,14 @@ Layer::Layer(int _in, int _out, int _miniBatchSize) {
 }
 
 void Layer::apply(Mat& input) {
-	preactivations = weights*input + biases.replicate(1, miniBatchSize);
-	activations = preactivations.unaryExpr(&activation);
-	derivs = preactivations.unaryExpr(&activationDeriv);
+	prevActivations = input;
+	pre = weights*input + biases.replicate(1, miniBatchSize);
+	activations = pre.unaryExpr(&Layer::activation);
+	derivs = pre.unaryExpr(&Layer::activationDeriv);
 	input = activations;
 }
 
+// WTD is W^T x D, where W^T is the transpose of weight matrix, D is delta vector
 void Layer::computeDeltaLast(Mat& output, Mat& ans, Mat& WTD) {
 	delta = costDeriv(output, ans).cwiseProduct(derivs.replicate(1, miniBatchSize));
 	WTD = weights.transpose() * delta;
@@ -42,13 +44,15 @@ void Layer::computeDeltaBack(Mat& WTD) {
 	WTD = weights.transpose() * delta;
 }
 
-void Layer::updateBiasAndWeights(Mat& backActivations, double lrate) {
+void Layer::updateBiasAndWeights(double lrate) {
 	biases -= lrate*delta.rowwise().mean();
-	weights -= lrate*(delta * backActivations.transpose()).rowwise().mean();
+	weights -= lrate*(delta * prevActivations.transpose()).rowwise().mean();
 }
 
-inline double Layer::activation(double x) { 
-	return 1.0 / (1.0 + exp(-x)); 
+
+
+inline double Layer::activation(double x) {
+	return 1.0 / (1.0 + exp(-x));
 }
 
 inline double Layer::activationDeriv(double x) {

@@ -8,6 +8,7 @@ const int ndigits=10, imgsize=28;
 int ntraining, ntest;
 
 // taken from https://compvisionlab.wordpress.com/
+/*
 
 inline int revint(int i) {
 	unsigned char ch1, ch2, ch3, ch4;
@@ -105,3 +106,5 @@ void train(){
 int main() {
 	train();
 }
+
+*/

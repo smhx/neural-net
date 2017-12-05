@@ -29,9 +29,9 @@ public:
 	// if this layer is not the last layer, computes the delta from the last layer's delta
 	void computeDeltaBack(Mat& WTD);
 
-	void Layer::updateBiasAndWeights(Mat& backActivations, double lrate);
+	void updateBiasAndWeights(double lrate);
 
-	pair<int, int> getSize();
+	std::pair<int, int> getSize();
 
 private: // methods
 
@@ -57,7 +57,11 @@ private: // properties
 
 	// the values before the activation function is applied to them
 	// these are the z values in the tutorial
-	Mat preactivations;
+	Mat pre;
+
+	// the activations of the layer before it
+	// saves a copy of the input from Layer::apply()
+	Mat prevActivations;
 
 	// stores the activations to use in backpropagation
 	Mat activations;
