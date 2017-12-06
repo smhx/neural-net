@@ -59,7 +59,6 @@ int main() {
 	srand(time(NULL));
 
 	int bits = 4;	
-	printf("hello\n");
 	
 	Layer l1(2 * bits, 8 * bits);
 //	Layer l2(8 * bits, 8 * bits);

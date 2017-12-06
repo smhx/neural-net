@@ -1,10 +1,17 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall
 
-main: build/main.o build/Network.o 
-	$(CXX) $(CXXFLAGS) -o bin/main build/main.o build/Network.o
+main: build/main.o build/Network2.o build/Layer.o
+	$(CXX) $(CXXFLAGS) -o bin/main build/main.o build/Network2.o build/Layer.o
 
-build/main.o: main.cpp inc/Network.h 
+build/Network2.o: 
+	$(CXX) $(CXXFLAGS) -c -o build/Network2.o src/Network2.cpp
+
+build/Layer.o:
+	$(CXX) $(CXXFLAGS) -c -o build/Layer.o src/Layer.cpp
+
+
+build/main.o: main.cpp 
 	$(CXX) $(CXXFLAGS) -c -o build/main.o main.cpp 
 
 digit: build/digit.o build/tester.o build/Network.o
