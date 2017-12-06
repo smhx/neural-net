@@ -55,8 +55,8 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 		Mat testBatch(in, test.size());
 		Mat testAns(out, test.size());
 		for (int i = 0; i < test.size(); ++i) {
-			testBatch.col(i) = data[i].first;
-			testAns.col(i) = data[i].second;
+			testBatch.col(i) = test[i].first;
+			testAns.col(i) = test[i].second;
 		}
 		feedForward(testBatch);
 		auto p = checker(testBatch, testAns);
