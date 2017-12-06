@@ -3,13 +3,12 @@
 using namespace std;
 
 // currently, this is just a fully connected layer using sigmoid activation function
-Layer::Layer(int _in, int _out, int _miniBatchSize) {
+Layer::Layer(int _in, int _out) {
 	in = _in;
 	out = _out;
-	miniBatchSize = _miniBatchSize;
 
 	// random
-	randGen = mt19937(randDev());
+	randGen = mt19937(chrono::high_resolution_clock::now().time_since_epoch().count());
 	// defaults to mean of 0.0, standard dev of 1.0
 	randDistribution = normal_distribution<double>();
 	
@@ -27,31 +26,41 @@ Layer::Layer(int _in, int _out, int _miniBatchSize) {
 
 void Layer::apply(Mat& input) {
 	prevActivations = input;
+	int miniBatchSize = input.cols();
 	pre = weights*input + biases.replicate(1, miniBatchSize);
-	activations = pre.unaryExpr(&Layer::activation);
-	derivs = pre.unaryExpr(&Layer::activationDeriv);
+	activations = pre.unaryExpr(&Layer::activation); //this gives an error when activation isn't static
+	derivs = pre.unaryExpr(&Layer::activationDeriv); //same thing
 	input = activations;
 }
 
 // WTD is W^T x D, where W^T is the transpose of weight matrix, D is delta vector
 void Layer::computeDeltaLast(Mat& output, Mat& ans, Mat& WTD) {
-	delta = costDeriv(output, ans).cwiseProduct(derivs.replicate(1, miniBatchSize));
+	
+//	cout << "\nBiases:\n" << biases;
+//	cout << "\nWeights:\n" << weights;
+//	cout << "\nOutput:\n" << output;
+//	cout << "\nAnswer:\n" << ans;
+	delta = costDeriv(output, ans).cwiseProduct(derivs);
 	WTD = weights.transpose() * delta;
 }
 
 void Layer::computeDeltaBack(Mat& WTD) {
-	delta = WTD.cwiseProduct(derivs.replicate(1, miniBatchSize));
+	delta = WTD.cwiseProduct(derivs);
 	WTD = weights.transpose() * delta;
 }
 
 void Layer::updateBiasAndWeights(double lrate) {
+	
+//	cout << "\nBiases:\n" << biases;
+//	cout << "\nWeights:\n" << weights;
+//	cout << "\nDelta:\n" << delta;
+//	cout << "\nDerivs:\n" << derivs;
+	
 	biases -= lrate*delta.rowwise().mean();
-	weights -= lrate*(delta * prevActivations.transpose()).rowwise().mean();
+	weights -= lrate*((delta * prevActivations.transpose()).rowwise().mean()).replicate(1, in);
 }
 
-
-
-inline double Layer::activation(double x) {
+double Layer::activation(double x) {
 	return 1.0 / (1.0 + exp(-x));
 }
 

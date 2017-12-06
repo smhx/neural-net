@@ -11,12 +11,14 @@
 
 using namespace std;
 
-Vec binary(long long i, int bits)
+Vec binary(int i, int bits)
 {
-	Vec v(bits, 0.0);
+	Vec v(bits);
 	for (int j = 0; j < bits; ++j) {
-		if (i&(1LL << j))
+		if (i&(1 << j))
 			v[j] = 1.0;
+		else
+			v[j] = 0.0;
 	}
 	return v;
 }
@@ -28,43 +30,65 @@ vdbl mod10(long long i)
 	return v;
 }
 
-bool check(const vdbl& tocheck, const vdbl& correct) {
-	if (tocheck.size() != correct.size()) {
-		printf("ERROR different size\n");
-		return false;
+pair<int,double> check(const Mat& tocheck, const Mat& correct) {
+	if (tocheck.rows() != correct.rows() || tocheck.cols() != correct.cols()) {
+		printf("ERROR in check: Vectors are different sizes\n");
+		return make_pair(0,0);
 	}
-	bool works = true;
-	for (int i = 0; i < tocheck.size() && works; ++i) {
-		if (abs(tocheck[i]-correct[i]) >= 0.5) works = false;
+//	cout << tocheck.col(0) << endl;
+//	cout << correct.col(0) << endl;
+//	cout << tocheck << endl;
+	int count = 0;
+	double cost = 0.0;
+	for (int col = 0; col < tocheck.cols(); col++)
+	{
+		bool works = true;
+		for (int i = 0; i < tocheck.rows(); ++i) {
+			double error = abs(tocheck(i, col) - correct(i, col));
+			if (error >= 0.5)
+				works = false;
+			cost += error*error;
+		}
+		if (works)
+			++count;
 	}
-	return works;
+	return make_pair(count, cost/tocheck.cols());
 }
 
 int main() {
 	srand(time(NULL));
-//	ifstream fin("tests/test2.txt");
 
-	int bits = 15;
-	int mbs = 8; //mini batch size
-	Layer l1(6, 12, mbs);
-	Layer l2(12, 12, mbs);
+	int bits = 4;
+	
+	Layer l1(2 * bits, 8 * bits);
+	Layer l2(8 * bits, 8 * bits);
+	Layer l3(8 * bits, bits + 1);
 	vector<Layer> layers;
 	layers.push_back(l1);
 	layers.push_back(l2);
-	Network2 n(layers, mbs, 0.1);
+	layers.push_back(l3);
 
-	vector<trdata> training(20000), testing(1000);
-	
+	Network2 n(layers, check, 2 * bits, bits + 1, 8, 0.01);
+
+	trbatch training(20000), testing(1<<(2*bits));
+	/*
 	for (trdata& data : testing) {
-		long long i = rand() & ((1 << bits) - 1);
-		data.first = binary(i, bits);
-		data.second = binary(i*i, bits*2);
+		int i = rand() & ((1 << bits) - 1);
+		int j = rand() & ((1 << bits) - 1);
+		data.first = binary((i << bits) + j, 2 * bits);
+		data.second = binary(i + j, bits + 1);
+	}*/
+	for (int i = 0; i < (1 << (2*bits)); i++) {
+		testing[i].first = binary(i, 2 * bits);
+		testing[i].second = binary((i >> bits) + (i & ((1 << bits) - 1)), bits + 1);
 	}
 	for (trdata& data : training) {
-		long long i = rand() & ((1 << bits) - 1);
-		data.first = binary(i, bits);
-		data.second = binary(i*i, bits*2);
+		int i = rand() & ((1 << bits) - 1);
+		int j = rand() & ((1 << bits) - 1);
+		data.first = binary((i << bits) + j, 2 * bits);
+		data.second = binary(i + j, bits + 1);
 	}
-
-	n.train(training, testing, 10);
+//	cout << testing[5].first << endl;
+//	cout << testing[5].second << endl;
+	n.train(training, testing, 1000);
 }

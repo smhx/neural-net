@@ -1,7 +1,7 @@
 #include "tester.h"
 
 using namespace std;
-
+/*
 vdbl tobinary(ll x, int bits) {
 	vdbl v(bits, 0.0);
 	for (int i = 0; i < bits; ++i) if (x & (1LL << i)) v[i] = 1.0;
@@ -75,4 +75,4 @@ void Tester::train() {
 	}
 }
 
-	
+*/

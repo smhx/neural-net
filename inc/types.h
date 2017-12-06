@@ -23,5 +23,5 @@ typedef std::pair<Vec, Vec> trdata;
 typedef std::vector<trdata> trbatch;
 
 
-typedef std::function<bool (const vdbl&, const vdbl&) > checker_type;
+typedef std::function<std::pair<int, double> (const Mat&, const Mat&) > checker_type;
 #endif

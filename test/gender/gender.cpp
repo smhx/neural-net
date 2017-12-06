@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <ctime>
 using namespace std;
-
+/*
 const int namelen = 10;
 
 // const int trsize = 2800;
@@ -75,7 +75,7 @@ void train() {
 	tester.train();
 
 }
-*/
+
 void test() {
 
 	printf("Testing\n");

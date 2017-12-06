@@ -21,7 +21,7 @@ public:
 
 //	Network2(const std::vector<Layer>& sizes, const checker_type& f, int batchSize, double _learnRate, double maxRate, double minRate, double L2, double momentum);
 
-	Network2::Network2(const std::vector<Layer>& _layers, int mbs, double lr);
+	Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, int _in, int _out, int mbs, double lr);
 	
 	void train(trbatch& data, trbatch& test, int numEpochs);
 
@@ -40,7 +40,8 @@ private: // properties
 
 	// the layers in the network
 	std::vector<Layer> layers; //should this be a vector of pointers to layers?
-	int numLayers;
+
+	int numLayers, in, out;
 
 	int miniBatchSize;
 
