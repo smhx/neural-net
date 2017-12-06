@@ -62,14 +62,14 @@ int main() {
 	printf("hello\n");
 	
 	Layer l1(2 * bits, 8 * bits);
-	Layer l2(8 * bits, 8 * bits);
+//	Layer l2(8 * bits, 8 * bits);
 	Layer l3(8 * bits, bits + 1);
 	vector<Layer> layers;
 	layers.push_back(l1);
-	layers.push_back(l2);
+//	layers.push_back(l2);
 	layers.push_back(l3);
 
-	Network2 n(layers, check, 2 * bits, bits + 1, 8, 0.01);
+	Network2 n(layers, check, 2 * bits, bits + 1, 8, 3);
 
 	trbatch training(20000), testing(1<<(2*bits));
 	

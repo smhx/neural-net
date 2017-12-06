@@ -45,8 +45,8 @@ void Layer::computeDeltaBack(Mat& WTD) {
 }
 
 void Layer::updateBiasAndWeights(double lrate) {
-	biases -= lrate*delta.rowwise().mean();
-	weights -= lrate*((delta * prevActivations.transpose()).rowwise().mean()).replicate(1, in); // THIS ISN"T CORRECT!!! It updates all weights in the same row by the same amount
+	biases -= lrate*delta.rowwise().mean(); // (BP3)
+	weights -= (lrate / delta.cols())*(delta * prevActivations.transpose()); // (BP4)
 }
 
 double Layer::activation(double x) {
