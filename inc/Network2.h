@@ -27,19 +27,11 @@ public:
 
 	void feedForward(Mat& input); // pass by reference. input layer will output as output layer
 
-private: // methods
-
-	void updateBatch(const trbatch& batch);
-
-	void backprop(const trdata& trdata, v2dbl& dgradb, v3dbl& dgradw);
-
-	void testBatch(const trbatch& batch);
-
 private: // properties
 	checker_type checker;
 
 	// the layers in the network
-	std::vector<Layer> layers; //should this be a vector of pointers to layers?
+	std::vector<Layer> layers;
 
 	int numLayers, in, out;
 

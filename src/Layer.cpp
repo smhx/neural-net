@@ -25,39 +25,28 @@ Layer::Layer(int _in, int _out) {
 }
 
 void Layer::apply(Mat& input) {
-	prevActivations = input;
+	prevActivations = input; // this is a^(l-1) in the tutorial
 	int miniBatchSize = input.cols();
-	pre = weights*input + biases.replicate(1, miniBatchSize);
-	activations = pre.unaryExpr(&Layer::activation); //this gives an error when activation isn't static
-	derivs = pre.unaryExpr(&Layer::activationDeriv); //same thing
-	input = activations;
+	pre = weights*input + biases.replicate(1, miniBatchSize); // these are the z-values in the tutorial
+	activations = pre.unaryExpr(&Layer::activation); // a = sigma(z) in tutorial		//this gives an error when activation isn't static
+	derivs = pre.unaryExpr(&Layer::activationDeriv); // this is sigma'(z) in tutorial	//same thing
+	input = activations; // changes input directly, since it is passed by reference
 }
 
 // WTD is W^T x D, where W^T is the transpose of weight matrix, D is delta vector
 void Layer::computeDeltaLast(Mat& output, Mat& ans, Mat& WTD) {
-	
-//	cout << "\nBiases:\n" << biases;
-//	cout << "\nWeights:\n" << weights;
-//	cout << "\nOutput:\n" << output;
-//	cout << "\nAnswer:\n" << ans;
-	delta = costDeriv(output, ans).cwiseProduct(derivs);
-	WTD = weights.transpose() * delta;
+	delta = costDeriv(output, ans).cwiseProduct(derivs); // delta^L = grad_a(C) * sigma'(z^L)	(BP1)
+	WTD = weights.transpose() * delta; // this is needed to compute delta^(L-1)
 }
 
 void Layer::computeDeltaBack(Mat& WTD) {
-	delta = WTD.cwiseProduct(derivs);
-	WTD = weights.transpose() * delta;
+	delta = WTD.cwiseProduct(derivs); // delta^l = ((W^(l+1))^T x delta^l) * sigma'(z)		(BP2)
+	WTD = weights.transpose() * delta; // this is needed to compute delta^(l-1)
 }
 
 void Layer::updateBiasAndWeights(double lrate) {
-	
-//	cout << "\nBiases:\n" << biases;
-//	cout << "\nWeights:\n" << weights;
-//	cout << "\nDelta:\n" << delta;
-//	cout << "\nDerivs:\n" << derivs;
-	
 	biases -= lrate*delta.rowwise().mean();
-	weights -= lrate*((delta * prevActivations.transpose()).rowwise().mean()).replicate(1, in);
+	weights -= lrate*((delta * prevActivations.transpose()).rowwise().mean()).replicate(1, in); // THIS ISN"T CORRECT!!! It updates all weights in the same row by the same amount
 }
 
 double Layer::activation(double x) {

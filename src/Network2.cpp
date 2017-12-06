@@ -1,5 +1,5 @@
 #include "../inc/Network2.h"
-#include <Eigen/Core>
+//#include <Eigen/Core>
 using namespace std;
 
 // Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, int mbs, double lr, double maxr, double minr, double L2, double m)
@@ -33,13 +33,10 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 		for (int i = 0; i < data.size(); ++i) {
 			batch.col(i % miniBatchSize) = data[i].first;
 			answers.col(i % miniBatchSize) = data[i].second;
-//			cout << "\nMini batch when i = " << i << endl << answers;
 			if ((i + 1) % miniBatchSize == 0) {
-//				cout << "\nMini batch answers:\n" << answers;
 				// feedforward
-				for (int i = 0; i < numLayers; i++)	{
-					layers[i].apply(batch);
-				}
+				feedForward(batch);
+
 				// backpropagate error
 				Mat WTD;
 				layers[numLayers - 1].computeDeltaLast(batch, answers, WTD);
@@ -61,10 +58,7 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 			testBatch.col(i) = data[i].first;
 			testAns.col(i) = data[i].second;
 		}
-//		cout << testAns << endl;
-		for (int i = 0; i < numLayers; i++)	{
-			layers[i].apply(testBatch);
-		}
+		feedForward(testBatch);
 		auto p = checker(testBatch, testAns);
 		printf("Epoch %d: %d out of %d correct, average cost: %.3f\n", epoch, p.first, testBatch.cols(), p.second);
 	}
