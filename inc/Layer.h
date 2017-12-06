@@ -24,7 +24,7 @@ public:
 	void apply(Mat& input);
 
 	// if this layer is the last layer, computes the delta (error) given the output and correct answer
-	void computeDeltaLast(Mat& output, Mat& ans, Mat& WTD);
+	void computeDeltaLast(const Mat& output, const Mat& ans, Mat& WTD);
 
 	// if this layer is not the last layer, computes the delta from the last layer's delta
 	void computeDeltaBack(Mat& WTD);
@@ -39,7 +39,7 @@ public:
 
 	static double activationDeriv(double x);
 
-	Mat costDeriv(Mat& ans, Mat& output);
+	Mat costDeriv(const Mat& ans, const Mat& output);
 	
 private: // properties
 

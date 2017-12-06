@@ -34,7 +34,7 @@ void Layer::apply(Mat& input) {
 }
 
 // WTD is W^T x D, where W^T is the transpose of weight matrix, D is delta vector
-void Layer::computeDeltaLast(Mat& output, Mat& ans, Mat& WTD) {
+void Layer::computeDeltaLast(const Mat& output, const Mat& ans, Mat& WTD) {
 	delta = costDeriv(output, ans).cwiseProduct(derivs); // delta^L = grad_a(C) * sigma'(z^L)	(BP1)
 	WTD = weights.transpose() * delta; // this is needed to compute delta^(L-1)
 }
@@ -57,7 +57,7 @@ inline double Layer::activationDeriv(double x) {
 	return activation(x)*(1 - activation(x));
 }
 
-inline Mat Layer::costDeriv(Mat& output, Mat& ans) {
+inline Mat Layer::costDeriv(const Mat& output, const Mat& ans) {
 	 return ans - output;
 }
 

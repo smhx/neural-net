@@ -60,6 +60,6 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 		}
 		feedForward(testBatch);
 		auto p = checker(testBatch, testAns);
-		printf("Epoch %d: %d out of %d correct, average cost: %.3f\n", epoch, p.first, testBatch.cols(), p.second);
+		printf("Epoch %d: %d out of %lu correct, average cost: %.3f\n", epoch, p.first, testBatch.cols(), p.second);
 	}
 }
