@@ -58,7 +58,8 @@ pair<int,double> check(const Mat& tocheck, const Mat& correct) {
 int main() {
 	srand(time(NULL));
 
-	int bits = 4;
+	int bits = 4;	
+	printf("hello\n");
 	
 	Layer l1(2 * bits, 8 * bits);
 	Layer l2(8 * bits, 8 * bits);
@@ -71,13 +72,13 @@ int main() {
 	Network2 n(layers, check, 2 * bits, bits + 1, 8, 0.01);
 
 	trbatch training(20000), testing(1<<(2*bits));
-	/*
+	
 	for (trdata& data : testing) {
 		int i = rand() & ((1 << bits) - 1);
 		int j = rand() & ((1 << bits) - 1);
 		data.first = binary((i << bits) + j, 2 * bits);
 		data.second = binary(i + j, bits + 1);
-	}*/
+	}
 	for (int i = 0; i < (1 << (2*bits)); i++) {
 		testing[i].first = binary(i, 2 * bits);
 		testing[i].second = binary((i >> bits) + (i & ((1 << bits) - 1)), bits + 1);

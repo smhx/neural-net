@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -I Eigen -std=c++11 -Wall
+CXXFLAGS = -std=c++11 -Wall
 
 main: build/main.o build/Network.o 
 	$(CXX) $(CXXFLAGS) -o bin/main build/main.o build/Network.o
