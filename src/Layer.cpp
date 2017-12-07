@@ -18,7 +18,7 @@ Layer::Layer(int _in, int _out) {
 	for (int i = 0; i < out; ++i) {
 		// set random weights
 		for (int j = 0; j < in; ++j)
-			weights(i,j) = randDistribution(randGen) / sqrt(in);
+			weights(i, j) = randDistribution(randGen) / sqrt(in);
 		// set random biases
 		biases(i) = randDistribution(randGen);
 	}
@@ -26,8 +26,7 @@ Layer::Layer(int _in, int _out) {
 
 void Layer::apply(Mat& input) {
 	prevActivations = input; // this is a^(l-1) in the tutorial
-	int miniBatchSize = input.cols();
-	pre = weights*input + biases.replicate(1, miniBatchSize); // these are the z-values in the tutorial
+	pre = weights*input + biases.replicate(1, input.cols()); // these are the z-values in the tutorial
 	activations = pre.unaryExpr(&Layer::activation); // a = sigma(z) in tutorial		//this gives an error when activation isn't static
 	derivs = pre.unaryExpr(&Layer::activationDeriv); // this is sigma'(z) in tutorial	//same thing
 	input = activations; // changes input directly, since it is passed by reference
@@ -36,11 +35,13 @@ void Layer::apply(Mat& input) {
 // WTD is W^T x D, where W^T is the transpose of weight matrix, D is delta vector
 void Layer::computeDeltaLast(const Mat& output, const Mat& ans, Mat& WTD) {
 	delta = costDeriv(output, ans).cwiseProduct(derivs); // delta^L = grad_a(C) * sigma'(z^L)	(BP1)
+//	cout << "\nLayer 1: delta is " << delta.rows() << " x " << delta.cols();
 	WTD = weights.transpose() * delta; // this is needed to compute delta^(L-1)
 }
 
 void Layer::computeDeltaBack(Mat& WTD) {
 	delta = WTD.cwiseProduct(derivs); // delta^l = ((W^(l+1))^T x delta^l) * sigma'(z)		(BP2)
+//	cout << "\nLayer 0: delta is " << delta.rows() << " x " << delta.cols();
 	WTD = weights.transpose() * delta; // this is needed to compute delta^(l-1)
 }
 
@@ -49,16 +50,28 @@ void Layer::updateBiasAndWeights(double lrate) {
 	weights -= (lrate / delta.cols())*(delta * prevActivations.transpose()); // (BP4)
 }
 
-double Layer::activation(double x) {
-	return 1.0 / (1.0 + exp(-x));
+inline double Layer::activation(double x) {
+	return 1.0 / (1.0 + exp(-x));					// sigmoid
+//	return (exp(x) - exp(-x)) / (exp(x) + exp(-x));	// tanh
 }
 
 inline double Layer::activationDeriv(double x) {
-	return activation(x)*(1 - activation(x));
+	return activation(x)*(1 - activation(x));			// sigmoid
+//	return 1 - (activation(x)*activation(x));	// tanh
 }
 
 inline Mat Layer::costDeriv(const Mat& output, const Mat& ans) {
-	 return ans - output;
+	 return output - ans;
+}
+
+void Layer::print()
+{
+//	cout << "weights:\n" << weights;
+//	cout << "\ndelta:\n" << delta;
+//	cout << "\nprevactivation:\n" << prevActivations;
+	cout << "\npre\n" << pre;
+//	cout << "\nderivs\n" << derivs;
+//	cout << "\nBiases:\n" << biases;
 }
 
 inline pair<int, int> Layer::getSize() { return make_pair(in, out); }

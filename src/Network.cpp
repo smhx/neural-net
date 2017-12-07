@@ -1,8 +1,8 @@
 #include "../inc/Network.h"
 
 using namespace std; // does not affect main.cpp
-/*
 
+/*
 // Initialize the parameters and sets random weights and biases
 Network::Network(const vector<int>& sizes, const checker_type& c, int _batchSize, double _learnRate, double _maxLearn, double _minLearn, double _L2weight, double _momentum) {
 

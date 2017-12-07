@@ -32,6 +32,8 @@ public:
 	void updateBiasAndWeights(double lrate);
 
 	std::pair<int, int> getSize();
+
+	void print();
 	
 // private: // methods
 

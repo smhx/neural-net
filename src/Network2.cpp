@@ -51,6 +51,12 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 				answers.resize(out, miniBatchSize);
 			}
 		}
+		/*
+		cout << "\nLayer 0 ";
+		layers[0].print();
+		cout << "\nLayer 1 ";
+		layers[1].print();
+		*/
 		// evaluate progress
 		Mat testBatch(in, test.size());
 		Mat testAns(out, test.size());
@@ -59,6 +65,8 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 			testAns.col(i) = test[i].second;
 		}
 		feedForward(testBatch);
+//		cout << testBatch << "\n\n" << testAns;
+
 		auto p = checker(testBatch, testAns);
 		printf("Epoch %d: %d out of %lu correct, average cost: %.3f\n", epoch, p.first, testBatch.cols(), p.second);
 	}
