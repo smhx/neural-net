@@ -19,12 +19,12 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 
-main: $(OBJ) build/main.o
-	$(CC) -o main $(OBJ) build/main.o $(CFLAGS)
+main: $(OBJ) 
+	$(CC) main.cpp -o main $(OBJ) $(CFLAGS)
 
 
-build/main.o: $(OBJ) main.cpp
-	$(CC) -c main.cpp -o build/main.o $(CFLAGS)
+# build/main.o: $(OBJ) main.cpp
+# 	$(CC) -c main.cpp -o build/main.o $(CFLAGS)
 
 
 .PHONY: clean

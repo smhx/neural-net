@@ -58,11 +58,7 @@ pair<int,double> check(const Mat& tocheck, const Mat& correct) {
 }
 
 int main() {
-	// printf("%lf\n", SigmoidActivationFunction::activation(1.0));
-	// SigmoidActivationFunction::activation(1.0);
-	Layer* l = new FullyConnectedLayer< SigmoidActivationFunction >(1, 2);
-	delete l;
-	/*
+
 	srand(time(NULL));
 
 	int bits = 10;	
@@ -98,7 +94,7 @@ int main() {
 //	cout << testing[5].first << endl;
 //	cout << testing[5].second << endl;
 	n.train(training, testing, 1000);
-	*/
+	
 }
 /*
 vdbl binary(long long i, int bits)
