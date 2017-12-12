@@ -61,7 +61,7 @@ int main() {
 
 	srand(time(NULL));
 
-	int bits = 10;	
+	int bits = 11;	
 
 	typedef FullyConnectedLayer<SigmoidActivationFunction> SigLayer;
 	
@@ -93,7 +93,7 @@ int main() {
 	}
 //	cout << testing[5].first << endl;
 //	cout << testing[5].second << endl;
-	n.train(training, testing, 1000);
+	n.train(training, testing, 5);
 	
 }
 /*

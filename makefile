@@ -18,14 +18,8 @@ OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 $(ODIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-
-main: $(OBJ) 
-	$(CC) main.cpp -o main $(OBJ) $(CFLAGS)
-
-
-# build/main.o: $(OBJ) main.cpp
-# 	$(CC) -c main.cpp -o build/main.o $(CFLAGS)
-
+main: $(OBJ) main.cpp
+	$(CC) main.cpp -o bin/main $(OBJ) $(CFLAGS)
 
 .PHONY: clean
 
