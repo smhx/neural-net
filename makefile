@@ -1,47 +1,33 @@
-CXX = g++
-CXXFLAGS = -std=c++11 -Wall
+IDIR=inc
+CC=g++
+CFLAGS=-std=c++11 -I $(IDIR)
 
-main: build/main.o build/Network2.o build/Layer.o
-	$(CXX) $(CXXFLAGS) -o bin/main build/main.o build/Network2.o build/Layer.o
+ODIR=build
+LDIR = Eigen
 
-build/Network2.o: 
-	$(CXX) $(CXXFLAGS) -c -o build/Network2.o src/Network2.cpp
+SRCDIR=src
 
-build/Layer.o:
-	$(CXX) $(CXXFLAGS) -c -o build/Layer.o src/Layer.cpp
+LIBS=-lm
 
+_DEPS = ActivationFunction.h FullyConnectedLayer.h Layer.h Network2.h types.h
+DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-build/main.o: main.cpp 
-	$(CXX) $(CXXFLAGS) -c -o build/main.o main.cpp 
+_OBJ = ActivationFunction.o FullyConnectedLayer.o Layer.o Network2.o types.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-digit: build/digit.o build/tester.o build/Network.o
-	$(CXX) $(CXXFLAGS) -o bin/digit build/digit.o build/tester.o build/Network.o
-
-build/digit.o: test/digit/digit.cpp inc/Network.h test/tester.h
-	$(CXX) $(CXXFLAGS) -c -o build/digit.o test/digit/digit.cpp
+$(ODIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 
-gender: build/gender.o build/tester.o build/Network.o
-	$(CXX) $(CXXFLAGS) -o bin/gender build/gender.o build/tester.o build/Network.o
+main: $(OBJ) build/main.o
+	$(CC) -o main $(OBJ) build/main.o $(CFLAGS)
 
 
-build/gender.o: test/gender/gender.cpp inc/Network.h test/tester.h
-	$(CXX) $(CXXFLAGS) -c -o build/gender.o test/gender/gender.cpp
-
-sum: build/sum.o build/tester.o build/Network.o
-	$(CXX) $(CXXFLAGS) -o bin/sum build/sum.o build/tester.o build/Network.o
-
-build/sum.o: test/sum/sum.cpp inc/Network.h test/tester.h
-	$(CXX) $(CXXFLAGS) -c -o build/sum.o test/sum/sum.cpp
+build/main.o: $(OBJ) main.cpp
+	$(CC) -c main.cpp -o build/main.o $(CFLAGS)
 
 
-build/tester.o: test/tester.cpp test/tester.h inc/Network.h
-	$(CXX) $(CXXFLAGS) -c -o build/tester.o test/tester.cpp 
+.PHONY: clean
 
-build/Network.o: src/Network.cpp inc/Network.h 
-	$(CXX) $(CXXFLAGS) -c -o build/Network.o src/Network.cpp
-
-
-clean :
-	rm bin/*
-	rm build/*
+clean:
+	rm -f $(ODIR)/*.o *~ core $(IDIR)/*~ 

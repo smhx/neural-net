@@ -6,19 +6,11 @@
 #include "inc/Network2.h"
 #include "inc/Layer.h"
 #include "inc/types.h"
-//#include "inc/Network.h"
+#include "inc/FullyConnectedLayer.h"
+#include "inc/ActivationFunction.h"
 
 #include <Eigen/Dense>
-/*
-typedef long long ll;
 
-typedef std::vector<double> vdbl;
-typedef std::vector<vdbl> v2dbl;
-typedef std::vector<v2dbl> v3dbl;
-
-typedef std::pair<vdbl, vdbl> trdata; // training data
-typedef std::vector<trdata> trbatch;
-*/
 using namespace std;
 
 Vec binary(int i, int bits)
@@ -66,13 +58,19 @@ pair<int,double> check(const Mat& tocheck, const Mat& correct) {
 }
 
 int main() {
+	SigmoidActivationFunction::activation(1.0);
+	Layer* l = new FullyConnectedLayer< SigmoidActivationFunction >(1, 2);
+	delete l;
+	/*
 	srand(time(NULL));
 
 	int bits = 10;	
+
+	typedef FullyConnectedLayer<SigmoidActivationFunction> SigLayer;
 	
-	vector<Layer> layers;
-	layers.push_back(Layer(2 * bits, 5 * bits));
-	layers.push_back(Layer(5 * bits, bits + 1));
+	vector<Layer*> layers;
+	layers.push_back(new SigLayer(2 * bits, 5 * bits));
+	layers.push_back(new SigLayer(5 * bits, bits + 1));
 
 	Network2 n(layers, check, 2 * bits, bits + 1, 8, 0.5);
 
@@ -83,11 +81,13 @@ int main() {
 		int j = rand() & ((1 << bits) - 1);
 		data.first = binary((i << bits) + j, 2 * bits);
 		data.second = binary(i + j, bits + 1);
-	}/*
-	for (int i = 0; i < (1 << (2*bits)); i++) {
-		testing[i].first = binary(i, 2 * bits);
-		testing[i].second = binary((i >> bits) + (i & ((1 << bits) - 1)), bits + 1);
-	}*/
+	}
+	
+	// for (int i = 0; i < (1 << (2*bits)); i++) {
+	// 	testing[i].first = binary(i, 2 * bits);
+	// 	testing[i].second = binary((i >> bits) + (i & ((1 << bits) - 1)), bits + 1);
+	// }
+
 	for (trdata& data : training) {
 		int i = rand() & ((1 << bits) - 1);
 		int j = rand() & ((1 << bits) - 1);
@@ -97,6 +97,7 @@ int main() {
 //	cout << testing[5].first << endl;
 //	cout << testing[5].second << endl;
 	n.train(training, testing, 1000);
+	*/
 }
 /*
 vdbl binary(long long i, int bits)
