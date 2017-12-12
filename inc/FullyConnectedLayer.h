@@ -21,6 +21,7 @@ class FullyConnectedLayer : public Layer
 {
 
 public:
+	FullyConnectedLayer();
 	FullyConnectedLayer(int _in, int _out);
 
 	~FullyConnectedLayer();

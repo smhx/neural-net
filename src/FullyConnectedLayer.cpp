@@ -4,6 +4,9 @@
 
 using namespace std;
 
+FC_LAYER_TEMPLATE
+FullyConnectedLayer<ActivationFn>::FullyConnectedLayer() {}
+
 // currently, this is just a fully connected layer using sigmoid activation function
 FC_LAYER_TEMPLATE
 FullyConnectedLayer<ActivationFn>::FullyConnectedLayer(int _in, int _out) {

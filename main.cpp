@@ -58,9 +58,10 @@ pair<int,double> check(const Mat& tocheck, const Mat& correct) {
 }
 
 int main() {
-	SigmoidActivationFunction::activation(1.0);
-	Layer* l = new FullyConnectedLayer< SigmoidActivationFunction >(1, 2);
-	delete l;
+	printf("%lf\n", SigmoidActivationFunction::activation(1.0));
+	// SigmoidActivationFunction::activation(1.0);
+	// Layer* l = new FullyConnectedLayer< SigmoidActivationFunction >(1, 2);
+	// delete l;
 	/*
 	srand(time(NULL));
 

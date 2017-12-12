@@ -9,7 +9,8 @@
 class Layer {
 public:
 
-	virtual ~Layer() {}
+	Layer();
+	virtual ~Layer()=0;
 
 	virtual void apply(Mat& input)=0;
 
