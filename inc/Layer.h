@@ -29,7 +29,7 @@ public:
 	// if this layer is not the last layer, computes the delta from the last layer's delta
 	void computeDeltaBack(Mat& WTD);
 
-	void updateBiasAndWeights(double lrate);
+	void updateBiasAndWeights(double lrate, double L2);
 
 	std::pair<int, int> getSize();
 

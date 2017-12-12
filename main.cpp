@@ -9,9 +9,9 @@
 //#include "inc/Network.h"
 
 #include <Eigen/Dense>
-/*
-typedef long long ll;
 
+typedef long long ll;
+/*
 typedef std::vector<double> vdbl;
 typedef std::vector<vdbl> v2dbl;
 typedef std::vector<v2dbl> v3dbl;
@@ -21,14 +21,14 @@ typedef std::vector<trdata> trbatch;
 */
 using namespace std;
 
-Vec binary(int i, int bits)
+Vec binary(ll i, int bits)
 {
 	Vec v(bits);
 	for (int j = 0; j < bits; ++j) {
-		if (i&(1 << j))
+		if (i & (1LL << j))
 			v[j] = 1.0;
 		else
-			v[j] = 0.0;
+			v[j] = -1.0;
 	}
 	return v;
 }
@@ -55,12 +55,16 @@ pair<int,double> check(const Mat& tocheck, const Mat& correct) {
 		bool works = true;
 		for (int i = 0; i < tocheck.rows(); ++i) {
 			double error = abs(tocheck(i, col) - correct(i, col));
-			if (error >= 0.5)
+			if (error >= 1.0)
 				works = false;
 			cost += error*error;
 		}
 		if (works)
 			++count;
+	}
+	if (isnan(cost))
+	{
+//		cout << "Cost is nan!\nTest Batch:\n" << tocheck << "\nAnswers\n" << correct;
 	}
 	return make_pair(count, cost/tocheck.cols());
 }
@@ -68,34 +72,34 @@ pair<int,double> check(const Mat& tocheck, const Mat& correct) {
 int main() {
 	srand(time(NULL));
 
-	int bits = 10;	
+	int bits = 7;	
 	
 	vector<Layer> layers;
-	layers.push_back(Layer(2 * bits, 5 * bits));
-	layers.push_back(Layer(5 * bits, bits + 1));
+	layers.push_back(Layer(2 * bits, 10 * bits));
+	layers.push_back(Layer(10 * bits, 10 * bits));
+	layers.push_back(Layer(10 * bits, 10 * bits));
+	layers.push_back(Layer(10 * bits, 2 * bits));
 
-	Network2 n(layers, check, 2 * bits, bits + 1, 8, 0.5);
+	Network2 n(layers, check, 2 * bits, 2 * bits, 8, 0.001, 0.0);
 
-	trbatch training(20000), testing(1000);
+	trbatch training(100000), testing(1000);
 	
 	for (trdata& data : testing) {
-		int i = rand() & ((1 << bits) - 1);
-		int j = rand() & ((1 << bits) - 1);
+		ll i = rand() & ((1 << bits) - 1);
+		ll j = rand() & ((1 << bits) - 1);
 		data.first = binary((i << bits) + j, 2 * bits);
-		data.second = binary(i + j, bits + 1);
+		data.second = binary(i * j, 2 * bits);
 	}/*
 	for (int i = 0; i < (1 << (2*bits)); i++) {
 		testing[i].first = binary(i, 2 * bits);
 		testing[i].second = binary((i >> bits) + (i & ((1 << bits) - 1)), bits + 1);
 	}*/
 	for (trdata& data : training) {
-		int i = rand() & ((1 << bits) - 1);
-		int j = rand() & ((1 << bits) - 1);
+		ll i = rand() & ((1 << bits) - 1);
+		ll j = rand() & ((1 << bits) - 1);
 		data.first = binary((i << bits) + j, 2 * bits);
-		data.second = binary(i + j, bits + 1);
+		data.second = binary(i * j, 2 * bits);
 	}
-//	cout << testing[5].first << endl;
-//	cout << testing[5].second << endl;
 	n.train(training, testing, 1000);
 }
 /*

@@ -45,19 +45,25 @@ void Layer::computeDeltaBack(Mat& WTD) {
 	WTD = weights.transpose() * delta; // this is needed to compute delta^(l-1)
 }
 
-void Layer::updateBiasAndWeights(double lrate) {
+void Layer::updateBiasAndWeights(double lrate, double L2) {
 	biases -= lrate*delta.rowwise().mean(); // (BP3)
-	weights -= (lrate / delta.cols())*(delta * prevActivations.transpose()); // (BP4)
+	weights -= (lrate / delta.cols())*(L2 * weights + delta * prevActivations.transpose()); // (BP4)
 }
 
 inline double Layer::activation(double x) {
-	return 1.0 / (1.0 + exp(-x));					// sigmoid
+//	return 1.0 / (1.0 + exp(-x));					// sigmoid
 //	return (exp(x) - exp(-x)) / (exp(x) + exp(-x));	// tanh
+//	return max(x, 0.0);								// rectified linear unit
+//	return log(1 + exp(x));							// softplus
+	return sqrt(3)*(exp(2 * x / 3) - exp(-2 * x / 3)) / (exp(2 * x / 3) + exp(-2 * x / 3));		// modified tanh
 }
 
 inline double Layer::activationDeriv(double x) {
-	return activation(x)*(1 - activation(x));			// sigmoid
+//	return activation(x)*(1 - activation(x));	// sigmoid
 //	return 1 - (activation(x)*activation(x));	// tanh
+//	return (x > 0) ? 1.0 : 0.0;					// rectified linear unit
+//	return 1.0 / (1.0 + exp(-x));				// softplus
+	return 8 / (sqrt(3) * (exp(2 * x / 3) + exp(-2 * x / 3)) * (exp(2 * x / 3) + exp(-2 * x / 3)));		// modified tanh
 }
 
 inline Mat Layer::costDeriv(const Mat& output, const Mat& ans) {
@@ -69,9 +75,10 @@ void Layer::print()
 //	cout << "weights:\n" << weights;
 //	cout << "\ndelta:\n" << delta;
 //	cout << "\nprevactivation:\n" << prevActivations;
-	cout << "\npre\n" << pre;
+//	cout << "\npre\n" << pre;
 //	cout << "\nderivs\n" << derivs;
 //	cout << "\nBiases:\n" << biases;
+	cout << weights.lpNorm<2>() << '\n';
 }
 
 inline pair<int, int> Layer::getSize() { return make_pair(in, out); }

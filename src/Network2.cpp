@@ -4,14 +4,14 @@ using namespace std;
 
 // Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, int mbs, double lr, double maxr, double minr, double L2, double m)
 
-Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, int _in, int _out, int mbs, double lr) {
+Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, int _in, int _out, int mbs, double lr, double _L2) {
 	layers = _layers;
 	checker = ch;
 	miniBatchSize = mbs;
 	learnRate = lr;
 //	maxRate = maxr;
 //	minRate = minr;
-//	L2weight = L2;
+	L2 = _L2;
 //	momentum = m;
 	numLayers = layers.size();
 	randGen = mt19937(randDev());
@@ -45,7 +45,7 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 				}
 				// updates
 				for (int i = 0; i < numLayers; i++)	{
-					layers[i].updateBiasAndWeights(learnRate);
+					layers[i].updateBiasAndWeights(learnRate, L2);
 				}
 				batch.resize(in, miniBatchSize);
 				answers.resize(out, miniBatchSize);
@@ -66,8 +66,16 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 		}
 		feedForward(testBatch);
 //		cout << testBatch << "\n\n" << testAns;
+		if (isnan(testBatch(0, 0)))
+		{
+			cout << "NAN!\n";
+			layers[1].print();
+		}
 
 		auto p = checker(testBatch, testAns);
 		printf("Epoch %d: %d out of %lu correct, average cost: %.3f\n", epoch, p.first, testBatch.cols(), p.second);
+//		layers[0].print();
+//		layers[1].print();
+//		layers[2].print();
 	}
 }
