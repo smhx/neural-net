@@ -2,15 +2,21 @@
 #define ACTIVATION_FUNCTION_H
 
 #include <cmath>
+#include "types.h"
 
 struct SigmoidActivationFunction {
-	static double activation(double x);
-	static double activationDeriv(double x);
+	static Mat activation(const Mat& a);
+	static Mat activationDeriv(const Mat& x);
 };
 
 struct TanhActivationFunction {
-	static double activation(double x);
-	static double activationDeriv(double x);
+	static Mat activation(const Mat& a);
+	static Mat activationDeriv(const Mat& x);
+};
+
+struct SoftMaxActivationFunction {
+	static Mat activation(const Mat& a);
+	static Mat activationDeriv(const Mat& x);
 };
 
 #endif

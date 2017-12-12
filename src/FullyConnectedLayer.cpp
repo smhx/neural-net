@@ -40,8 +40,8 @@ FC_LAYER_TEMPLATE
 void FullyConnectedLayer<ActivationFn>::apply(Mat& input) {
 	prevActivations = input; // this is a^(l-1) in the tutorial
 	pre = weights*input + biases.replicate(1, input.cols()); // these are the z-values in the tutorial
-	activations = pre.unaryExpr(&ActivationFn::activation); // a = sigma(z) in tutorial		//this gives an error when activation isn't static
-	derivs = pre.unaryExpr(&ActivationFn::activationDeriv); // this is sigma'(z) in tutorial	//same thing
+	activations = ActivationFn::activation(pre);
+	derivs = ActivationFn::activationDeriv(pre);
 	input = activations; // changes input directly, since it is passed by reference
 }
 
