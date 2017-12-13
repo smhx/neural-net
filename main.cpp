@@ -93,7 +93,7 @@ int main() {
 	}
 //	cout << testing[5].first << endl;
 //	cout << testing[5].second << endl;
-	n.train(training, testing, 5);
+	n.train(training, testing, 500);
 	
 }
 /*
