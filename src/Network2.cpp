@@ -11,7 +11,7 @@ Network2::Network2(const std::vector<Layer*>& _layers, const checker_type& ch, i
 	learnRate = lr;
 //	maxRate = maxr;
 //	minRate = minr;
-	L2 = _L2;
+	// L2 = _L2;
 //	momentum = m;
 	numLayers = layers.size();
 	randGen = mt19937(randDev());

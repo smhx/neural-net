@@ -21,6 +21,9 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
 main: $(OBJ) main.cpp
 	$(CC) main.cpp -o bin/main $(OBJ) $(CFLAGS)
 
+testfile: $(OBJ) testfile.cpp
+	$(CC) testfile.cpp -o bin/testfile $(OBJ) $(CFLAGS)
+
 .PHONY: clean
 
 clean:
