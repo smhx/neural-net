@@ -1,89 +1,31 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include <vector>
-#include <random>
-#include <algorithm>
-#include <iostream>
-#include <cmath>
-#include <string>
-#include <fstream>
-#include <functional>
-#include <chrono>
-
+#include <Eigen/Dense>
 #include "types.h"
 
-class Layer
-{
+// The layer interface. Is an abstract class
 
+class Layer {
 public:
-	Layer(int _in, int _out);
 
-	// converts the output of the previous layer to the output of this layer
-	// input is an in x miniBatchSize matrix, each column is a data set
-	void apply(Mat& input);
+	Layer();
+	virtual ~Layer()=0;
+
+	virtual void apply(Mat& input)=0;
 
 	// if this layer is the last layer, computes the delta (error) given the output and correct answer
-	void computeDeltaLast(const Mat& output, const Mat& ans, Mat& WTD);
+	virtual void computeDeltaLast(const Mat& output, const Mat& ans, Mat& WTD)=0;
 
 	// if this layer is not the last layer, computes the delta from the last layer's delta
-	void computeDeltaBack(Mat& WTD);
 
-	void updateBiasAndWeights(double lrate, double L2);
+	virtual void computeDeltaBack(Mat& WTD)=0;
 
-	std::pair<int, int> getSize();
+	virtual void updateBiasAndWeights(double lrate)=0;
 
-	void print();
-	
-// private: // methods
+	virtual std::pair<int, int> getSize()=0;
 
-	static double activation(double x);
-
-	static double activationDeriv(double x);
-
-	Mat costDeriv(const Mat& ans, const Mat& output);
-	
-private: // properties
-
-	// sizes of the layer's input and output
-	int in, out;
-
-	// an out x in matrix of weights
-	// weights[i][j] is the weight of node j in the previous layer to node i in the current layer
-	Mat weights;
-
-	// an out x 1 vector of biases
-	Vec biases;
-
-	// the values before the activation function is applied to them
-	// these are the z values in the tutorial
-	Mat pre;
-
-	// the activations of the layer before it
-	// saves a copy of the input from Layer::apply()
-	Mat prevActivations;
-
-	// stores the activations to use in backpropagation
-	Mat activations;
-
-	// sigma'(z) for each preactivation z
-	Mat derivs;
-
-	// the error from the actual answer, used for backpropagation
-	// it's an o
-	Mat delta;
-	
-	// Random stuff 
-	
-	// random device class instance, source of 'true' randomness for initializing random seed
-//	std::random_device randDev;
-	
-	// Mersenne twister PRNG, initialized with seed from previous random device instance
-	std::mt19937 randGen;
-	
-	// normal distribution
-	std::normal_distribution<double> randDistribution;
-	
+	virtual void print()=0;
 };
 
 #endif

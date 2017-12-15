@@ -4,7 +4,7 @@ using namespace std;
 
 // Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, int mbs, double lr, double maxr, double minr, double L2, double m)
 
-Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, int _in, int _out, int mbs, double lr, double _L2) {
+Network2::Network2(const std::vector<Layer*>& _layers, const checker_type& ch, int _in, int _out, int mbs, double lr) {
 	layers = _layers;
 	checker = ch;
 	miniBatchSize = mbs;
@@ -19,9 +19,17 @@ Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, in
 	out = _out;
 }
 
+Network2::~Network2() {
+	printf("In network2 destructor\n");
+	for (Layer* l : layers) {
+		delete l;
+		l = NULL;
+	}
+}
+
 void Network2::feedForward(Mat& input) {
 	for (int i = 0; i < numLayers; ++i)
-		layers[i].apply(input);
+		layers[i]->apply(input);
 }
 
 void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
@@ -39,13 +47,14 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 
 				// backpropagate error
 				Mat WTD;
-				layers[numLayers - 1].computeDeltaLast(batch, answers, WTD);
+				layers[numLayers - 1]->computeDeltaLast(batch, answers, WTD);
 				for (int i = numLayers - 2; i >= 0; i--) {
-					layers[i].computeDeltaBack(WTD);
+					layers[i]->computeDeltaBack(WTD);
 				}
 				// updates
 				for (int i = 0; i < numLayers; i++)	{
-					layers[i].updateBiasAndWeights(learnRate, L2);
+
+					layers[i]->updateBiasAndWeights(learnRate);
 				}
 				batch.resize(in, miniBatchSize);
 				answers.resize(out, miniBatchSize);
@@ -69,7 +78,7 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 		if (isnan(testBatch(0, 0)))
 		{
 			cout << "NAN!\n";
-			layers[1].print();
+			layers[1]->print();
 		}
 
 		auto p = checker(testBatch, testAns);
