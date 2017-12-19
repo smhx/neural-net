@@ -39,9 +39,6 @@ pair<int, double> check(const Mat& tocheck, const Mat& correct)
 		printf("ERROR in check: Vectors are different sizes\n");
 		return make_pair(0, 0);
 	}
-	//	cout << tocheck.col(0) << endl;
-	//	cout << correct.col(0) << endl;
-	//	cout << tocheck << endl;
 	int count = 0;
 	double cost = 0.0;
 	for (int col = 0; col < tocheck.cols(); col++)
@@ -56,35 +53,43 @@ pair<int, double> check(const Mat& tocheck, const Mat& correct)
 		if (works)
 			++count;
 	}
-	if (isnan(cost))
-	{
-		//		cout << "Cost is nan!\nTest Batch:\n" << tocheck << "\nAnswers\n" << correct;
-	}
 	return make_pair(count, cost / tocheck.cols());
 }
 
 int main() {
 	srand(time(NULL));
-	int bits = 30;
+	int bits = 10;
 	typedef FullyConnectedLayer<SigmoidActivationFunction> SigLayer;
 
 	vector<Layer*> layers;
-	layers.push_back(new SigLayer(2 * bits, 4 * bits));
-	layers.push_back(new SigLayer(4 * bits, bits + 1));
-	Network2 n(layers, check, 2 * bits, bits + 1, 16, 0.8);
+	layers.push_back(new SigLayer(bits, bits));
+	layers.push_back(new SigLayer(bits, 10));
+	Network2 n(layers, check, bits, 10, 16, 0.5);
 	trbatch training(100000), testing(1000);
 
 	for (trdata& data : testing) {
 		ll i = rand() & ((1LL << bits) - 1);
-		ll j = rand() & ((1LL << bits) - 1);
-		data.first = binary((i << bits) + j, 2 * bits);
-		data.second = binary(i + j, bits + 1);
+		data.first = binary(i, bits);
+		data.second = mod10(i);
 	}
 	for (trdata& data : training) {
 		ll i = rand() & ((1LL << bits) - 1);
-		ll j = rand() & ((1LL << bits) - 1);
-		data.first = binary((i << bits) + j, 2 * bits);
-		data.second = binary(i + j, bits + 1);
+		data.first = binary(i, bits);
+		data.second = mod10(i);
 	}
 	n.train(training, testing, 500);
 }
+//addition
+/*
+for (trdata& data : testing) {
+ll i = rand() & ((1LL << bits) - 1);
+ll j = rand() & ((1LL << bits) - 1);
+data.first = binary((i << bits) + j, 2 * bits);
+data.second = binary(i + j, bits + 1);
+}
+for (trdata& data : training) {
+ll i = rand() & ((1LL << bits) - 1);
+ll j = rand() & ((1LL << bits) - 1);
+data.first = binary((i << bits) + j, 2 * bits);
+data.second = binary(i + j, bits + 1);
+}*/
