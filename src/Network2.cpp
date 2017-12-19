@@ -22,7 +22,7 @@ Network2::Network2(const std::vector<Layer*>& _layers, const checker_type& ch, i
 Network2::~Network2() {
 	printf("In network2 destructor\n");
 	for (Layer* l : layers) {
-		delete l;
+		if (l!=NULL) delete l;
 		l = NULL;
 	}
 }
