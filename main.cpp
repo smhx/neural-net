@@ -73,9 +73,9 @@ int main() {
 	
 	vector<Layer*> layers;
 	layers.push_back(new SigLayer(2 * bits, 5 * bits));
-	layers.push_back(new SigLayer(5 * bits, bits + 1));
+	layers.push_back(new SigLayer(5 * bits, 2 * bits));
 
-	Network2 n(layers, check, 2 * bits, 2 * bits, 8, 0.001);
+	Network2 n(layers, check, 2 * bits, 2 * bits, 8, 0.1);
 
 	trbatch training(100000), testing(1000);
 	
@@ -84,12 +84,7 @@ int main() {
 		ll j = rand() & ((1 << bits) - 1);
 		data.first = binary((i << bits) + j, 2 * bits);
 		data.second = binary(i * j, 2 * bits);
-	}
-	for (int i = 0; i < (1 << (2*bits)); i++) {
-		testing[i].first = binary(i, 2 * bits);
-		testing[i].second = binary((i >> bits) + (i & ((1 << bits) - 1)), bits + 1);
-	}
-		
+	}		
 	for (trdata& data : training) {
 		ll i = rand() & ((1 << bits) - 1);
 		ll j = rand() & ((1 << bits) - 1);
