@@ -27,9 +27,8 @@ Vec binary(ll i, int bits)
 	return v;
 }
 
-vdbl mod10(long long i)
-{
-	vdbl v(10, 0.0);
+Vec mod10(long long i) {
+	Vec v = Vec::Zero(10);
 	v[i % 10] = 1.0;
 	return v;
 }
@@ -66,24 +65,24 @@ pair<int, double> check(const Mat& tocheck, const Mat& correct)
 
 int main() {
 	srand(time(NULL));
-	int bits = 15;
+	int bits = 30;
 	typedef FullyConnectedLayer<SigmoidActivationFunction> SigLayer;
 
 	vector<Layer*> layers;
-	layers.push_back(new SigLayer(2 * bits, 5 * bits));
-	layers.push_back(new SigLayer(5 * bits, bits + 1));
-	Network2 n(layers, check, 2 * bits, bits + 1, 16, 0.5);
+	layers.push_back(new SigLayer(2 * bits, 4 * bits));
+	layers.push_back(new SigLayer(4 * bits, bits + 1));
+	Network2 n(layers, check, 2 * bits, bits + 1, 16, 0.8);
 	trbatch training(100000), testing(1000);
 
 	for (trdata& data : testing) {
-		ll i = rand() & ((1 << bits) - 1);
-		ll j = rand() & ((1 << bits) - 1);
+		ll i = rand() & ((1LL << bits) - 1);
+		ll j = rand() & ((1LL << bits) - 1);
 		data.first = binary((i << bits) + j, 2 * bits);
 		data.second = binary(i + j, bits + 1);
 	}
 	for (trdata& data : training) {
-		ll i = rand() & ((1 << bits) - 1);
-		ll j = rand() & ((1 << bits) - 1);
+		ll i = rand() & ((1LL << bits) - 1);
+		ll j = rand() & ((1LL << bits) - 1);
 		data.first = binary((i << bits) + j, 2 * bits);
 		data.second = binary(i + j, bits + 1);
 	}
