@@ -27,9 +27,9 @@ Vec binary(ll i, int bits)
 	return v;
 }
 
-Vec mod10(long long i) {
-	Vec v = Vec::Zero(10);
-	v[i % 10] = 1.0;
+Vec mod(long long i, int m) {
+	Vec v = Vec::Zero(m);
+	v[i % m] = 1.0;
 	return v;
 }
 
@@ -56,26 +56,49 @@ pair<int, double> check(const Mat& tocheck, const Mat& correct)
 	return make_pair(count, cost / tocheck.cols());
 }
 
+pair<int, double> checkMax(const Mat& tocheck, const Mat& correct)
+{
+	if (tocheck.rows() != correct.rows() || tocheck.cols() != correct.cols()) {
+		printf("ERROR in check: Vectors are different sizes\n");
+		return make_pair(0, 0);
+	}
+	int count = 0;
+	double cost = 0.0;
+	for (int col = 0; col < tocheck.cols(); col++)
+	{
+		int index = 0;
+		for (int i = 0; i < tocheck.rows(); ++i) {
+			if (tocheck(i, col) > tocheck(index, col))
+				index = i;
+			double error = abs(tocheck(i, col) - correct(i, col));
+			cost += error * error;
+		}
+		if (correct(index, col))
+			++count;
+	}
+	return make_pair(count, cost / tocheck.cols());
+}
+
 int main() {
 	srand(time(NULL));
-	int bits = 10;
+	int bits = 15, m = 10;
 	typedef FullyConnectedLayer<SigmoidActivationFunction> SigLayer;
 
 	vector<Layer*> layers;
-	layers.push_back(new SigLayer(bits, bits));
-	layers.push_back(new SigLayer(bits, 10));
-	Network2 n(layers, check, bits, 10, 16, 0.5);
-	trbatch training(100000), testing(1000);
+	layers.push_back(new SigLayer(bits, 2*bits));
+	layers.push_back(new SigLayer(2*bits, m));
+	Network2 n(layers, checkMax, bits, m, 16, 0.5);
+	trbatch training(100000), testing(100);
 
 	for (trdata& data : testing) {
 		ll i = rand() & ((1LL << bits) - 1);
 		data.first = binary(i, bits);
-		data.second = mod10(i);
+		data.second = mod(i, m);
 	}
 	for (trdata& data : training) {
 		ll i = rand() & ((1LL << bits) - 1);
 		data.first = binary(i, bits);
-		data.second = mod10(i);
+		data.second = mod(i, m);
 	}
 	n.train(training, testing, 500);
 }

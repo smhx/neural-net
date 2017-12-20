@@ -74,7 +74,7 @@ void Network2::train(trbatch& data, trbatch& test, int numEpochs) {
 			testAns.col(i) = test[i].second;
 		}
 		feedForward(testBatch);
-//		cout << testBatch << "\n\n" << testAns;
+		cout << testBatch << "\n\n" << testAns;
 		if (isnan(testBatch(0, 0)))
 		{
 			cout << "NAN!\n";
