@@ -27,6 +27,14 @@ Vec binary(ll i, int bits)
 	return v;
 }
 
+Vec convertToBase(ll i, int base, int digits) {
+	Vec v(digits);
+	for (int j = 0; j < digits; j++) {
+		v[j] = i % base;
+		i /= base;
+	}
+}
+
 Vec mod(long long i, int m) {
 	Vec v = Vec::Zero(m);
 	v[i % m] = 1.0;
@@ -81,25 +89,30 @@ pair<int, double> checkMax(const Mat& tocheck, const Mat& correct)
 
 int main() {
 	srand(time(NULL));
-	int bits = 15, m = 10;
+	int d = 6, m = 10; //d = digits, m = mod
 	typedef FullyConnectedLayer<SigmoidActivationFunction> SigLayer;
 
 	vector<Layer*> layers;
-	layers.push_back(new SigLayer(bits, 2*bits));
-	layers.push_back(new SigLayer(2*bits, m));
-	Network2 n(layers, checkMax, bits, m, 16, 0.5);
+	layers.push_back(new SigLayer(2*d, 20*d));
+	layers.push_back(new SigLayer(20*d, d+1));
+	Network2 n(layers, checkMax, 2*d, d+1, 16, 0.5);
 	trbatch training(100000), testing(100);
 
+	ll limit = 1LL;
+	for (int i = 0; i < d; i++) limit *= 10;
+
 	for (trdata& data : testing) {
-		ll i = rand() & ((1LL << bits) - 1);
-		data.first = binary(i, bits);
-		data.second = mod(i, m);
+		ll i = rand() % limit;
+		data.first = convertToBase(i, 10, d);
+		data.second = binary(i + j, d + 1);
 	}
 	for (trdata& data : training) {
-		ll i = rand() & ((1LL << bits) - 1);
-		data.first = binary(i, bits);
-		data.second = mod(i, m);
+		ll i = rand() % limit;
+		ll j = rand() % limit;
+		data.first = base10(i * limit + j, 2 * d);
+		data.second = base10(i + j, d + 1);
 	}
+	
 	n.train(training, testing, 500);
 }
 //addition
@@ -115,4 +128,18 @@ ll i = rand() & ((1LL << bits) - 1);
 ll j = rand() & ((1LL << bits) - 1);
 data.first = binary((i << bits) + j, 2 * bits);
 data.second = binary(i + j, bits + 1);
-}*/
+}
+*/
+
+// mod
+
+//for (trdata& data : testing) {
+//	ll i = rand() % limit;
+//	data.first = binary(i, bits);
+//	data.second = mod(i, m);
+//}
+//for (trdata& data : training) {
+//	ll i = rand() & ((1LL << bits) - 1);
+//	data.first = binary(i, bits);
+//	data.second = mod(i, m);
+//}

@@ -1,5 +1,5 @@
 #include "../inc/Network2.h"
-//#include <Eigen/Core>
+
 using namespace std;
 
 // Network2::Network2(const std::vector<Layer>& _layers, const checker_type& ch, int mbs, double lr, double maxr, double minr, double L2, double m)
